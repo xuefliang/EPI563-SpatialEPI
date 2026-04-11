@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Week 2 Cartography for Epidemiology I | EPI 563: Spatial Epidemiology, Fall 2023</title>
+<meta name="author" content="Michael Kramer">
+<meta name="description" content="2.1 Getting Ready  2.1.1 Learning objectives  TABLE 1.1: Learning objectives by weekly module After this module you should be able to…Design a cartographic representation of epidemiologic data...">
+<meta name="generator" content="bookdown 0.35 with bs4_book()">
+<meta property="og:title" content="Week 2 Cartography for Epidemiology I | EPI 563: Spatial Epidemiology, Fall 2023">
+<meta property="og:type" content="book">
+<meta property="og:description" content="2.1 Getting Ready  2.1.1 Learning objectives  TABLE 1.1: Learning objectives by weekly module After this module you should be able to…Design a cartographic representation of epidemiologic data...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Week 2 Cartography for Epidemiology I | EPI 563: Spatial Epidemiology, Fall 2023">
+<meta name="twitter:description" content="2.1 Getting Ready  2.1.1 Learning objectives  TABLE 1.1: Learning objectives by weekly module After this module you should be able to…Design a cartographic representation of epidemiologic data...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.5.1/transition.js"></script><script src="libs/bs3compat-0.5.1/tabs.js"></script><script src="libs/bs3compat-0.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">EPI 563: Spatial Epidemiology, Fall 2023</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">How to use this eBook</a></li>
+<li><a class="" href="download-ebook.html">Download eBook</a></li>
+<li class="book-part">Getting ready…</li>
+<li><a class="" href="software-installation.html">Software installation</a></li>
+<li><a class="" href="installing-packages-for-this-course.html">Installing packages for this course</a></li>
+<li class="book-part">Weekly Modules</li>
+<li><a class="" href="locating-spatial-epidemiology.html"><span class="header-section-number">1</span> Locating Spatial Epidemiology</a></li>
+<li><a class="active" href="cartography-for-epidemiology-i.html"><span class="header-section-number">2</span> Cartography for Epidemiology I</a></li>
+<li><a class="" href="cartography-for-epidemiology-ii-spatial-ethics.html"><span class="header-section-number">3</span> Cartography for Epidemiology II: Spatial Ethics</a></li>
+<li><a class="" href="disease-mapping-i-aspatial-empirical-bayes.html"><span class="header-section-number">4</span> Disease Mapping I: Aspatial Empirical Bayes</a></li>
+<li><a class="" href="disease-mapping-ii-spatial-empirical-bayes.html"><span class="header-section-number">5</span> Disease Mapping II: Spatial Empirical Bayes</a></li>
+<li><a class="" href="disease-mapping-iii-introduction-to-fully-bayesian-mapping.html"><span class="header-section-number">6</span> Disease Mapping III: Introduction to Fully Bayesian mapping</a></li>
+<li><a class="" href="disease-mapping-iv-kernel-density-estimation.html"><span class="header-section-number">7</span> Disease Mapping IV: Kernel Density Estimation</a></li>
+<li><a class="" href="spatial-structure-and-clustering-i-morans-i-and-lisa.html"><span class="header-section-number">8</span> Spatial Structure and Clustering I: Moran’s I and LISA</a></li>
+<li><a class="" href="spatial-structure-and-clustering-ii-spatial-scan-statistics.html"><span class="header-section-number">9</span> Spatial Structure and Clustering II: Spatial scan statistics</a></li>
+<li><a class="" href="spatreg1.html"><span class="header-section-number">10</span> Spatial Regression I: Spatializing aspatial regression residuals</a></li>
+<li><a class="" href="spatial-regression-ii-spatial-econometric-regression.html"><span class="header-section-number">11</span> Spatial Regression II: Spatial econometric regression</a></li>
+<li><a class="" href="spatial-regression-iii-geographically-weighted-regression.html"><span class="header-section-number">12</span> Spatial Regression III: Geographically Weighted Regression</a></li>
+<li class="book-part">Appendices</li>
+<li><a class="" href="reproducibility-and-projects-in-r.html"><span class="header-section-number">13</span> Reproducibility and Projects in R</a></li>
+<li><a class="" href="introduction-to-rmarkdown.html"><span class="header-section-number">14</span> Introduction to rmarkdown</a></li>
+<li><a class="" href="formatting-markdown-and-notebooks.html"><span class="header-section-number">15</span> Formatting Markdown and Notebooks</a></li>
+<li><a class="" href="sf-overview.html"><span class="header-section-number">16</span> Tips for working with sf data class</a></li>
+<li><a class="" href="dplyr.html"><span class="header-section-number">17</span> Tips for using dplyr</a></li>
+<li><a class="" href="intro-tmap.html"><span class="header-section-number">18</span> Tips for using tmap</a></li>
+<li><a class="" href="kde-extract.html"><span class="header-section-number">19</span> Using kernel density estimates to quantify an exposure for Spatial Epi</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/mkram01/EPI563-SpatialEPI">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="cartography-for-epidemiology-i" class="section level1" number="2">
+<h1>
+<span class="header-section-number">Week 2</span> Cartography for Epidemiology I<a class="anchor" aria-label="anchor" href="#cartography-for-epidemiology-i"><i class="fas fa-link"></i></a>
+</h1>
+<div id="getting-ready-1" class="section level2" number="2.1">
+<h2>
+<span class="header-section-number">2.1</span> Getting Ready<a class="anchor" aria-label="anchor" href="#getting-ready-1"><i class="fas fa-link"></i></a>
+</h2>
+<div id="learning-objectives-1" class="section level3" number="2.1.1">
+<h3>
+<span class="header-section-number">2.1.1</span> Learning objectives<a class="anchor" aria-label="anchor" href="#learning-objectives-1"><i class="fas fa-link"></i></a>
+</h3>
+<div class="inline-table"><table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; width: 100%; margin-left: auto; margin-right: auto;  " id="learning-ob">
+<caption style="caption-side: top; text-align: center;">
+<span id="tab:learning-ob">TABLE 1.1: </span> Learning objectives by weekly module</caption>
+<col>
+<tr><th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 6pt; background-color: rgb(204, 204, 204); font-weight: bold;">After this module you should be able to…</th></tr>
+<tr><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 6pt; background-color: rgb(242, 242, 242); font-weight: normal;">Design a cartographic representation of epidemiologic data that is consistent with best practices in public health data visualization.</td></tr>
+<tr><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 6pt; background-color: rgb(230, 230, 230); font-weight: normal;">Apply data processing functions to accomplish foundational data management and preparation for spatial epidemiology (e.g. summarize, aggregate, combine, recode, etc)</td></tr>
+</table></div>
+</div>
+<div id="additional-resources-1" class="section level3" number="2.1.2">
+<h3>
+<span class="header-section-number">2.1.2</span> Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources-1"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li><a href="https://www.cdc.gov/dhdsp/maps/gisx/resources/tips-creating-ph-maps.html">CDC Guidance for Cartography of Public Health Data (complements required reading)</a></li>
+<li><a href="https://www.citylab.com/design/2015/06/when-maps-lie/396761/">When Maps Lie</a></li>
+<li><a href="http://colorbrewer2.org/#">Color Brewer Website for color guidance in choropleth maps</a></li>
+<li><a href="https://walker-data.com/census-r/">Analyzing US Census Data: Methods, Maps, and Models in R</a></li>
+</ul>
+</div>
+<div id="important-vocabulary-1" class="section level3" number="2.1.3">
+<h3>
+<span class="header-section-number">2.1.3</span> Important Vocabulary<a class="anchor" aria-label="anchor" href="#important-vocabulary-1"><i class="fas fa-link"></i></a>
+</h3>
+<div class="inline-table"><table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; width: 90%; margin-left: auto; margin-right: auto;  " id="tab:unnamed-chunk-2">
+<caption style="caption-side: top; text-align: center;">
+<span id="tab:unnamed-chunk-2">TABLE 1.2: </span> Vocabulary for Week 2</caption>
+<col>
+<col>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(84, 153, 199); font-weight: bold;"><span style="color: rgb(255, 255, 255);">Term</span></th>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(84, 153, 199); font-weight: bold;"><span style="color: rgb(255, 255, 255);">Definition</span></th>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(212, 230, 241); font-weight: bold;">Cartography</td>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(212, 230, 241); font-weight: normal;">The production of maps, including construction of projections, design, compilation, drafting, and reproduction</td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(169, 204, 227); font-weight: bold;">Choropleth map</td>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(169, 204, 227); font-weight: normal;">A type of thematic map in which areas are shaded or patterned in proportion to a statistical variable that represents an aggregate summary of a geographic characteristic within each area, such as population density, disease risk, or standardized mortality ratio</td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(212, 230, 241); font-weight: bold;">Color palette: diverging</td>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(212, 230, 241); font-weight: normal;">Diverging schemes allow the emphasis of a quantitative data display that progresses outward from a critical midpoint of the data range. A typical diverging scheme pairs sequential schemes based on two different hues so that they diverge from a shared light color, for the critical midpoint, toward dark colors of different hues at each extreme</td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(169, 204, 227); font-weight: bold;">Color palette: qualitative</td>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(169, 204, 227); font-weight: normal;">Qualitative schemes use differences in hue to represent nominal differences, or differences in kind. The lightness of the hues used for qualitative categories should be similar but not equal. </td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(212, 230, 241); font-weight: bold;">Color palette: sequential</td>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(212, 230, 241); font-weight: normal;">Sequential data classes are logically arranged from high to low, and this stepped sequence of categories should be represented by sequential lightness steps. Low data values are usually represented by light colors and high values represented by dark colors. Transitions between hues may be used in a sequential scheme, but the light-to-dark progression should dominate the scheme.</td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(169, 204, 227); font-weight: bold;">Isopleth map</td>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(169, 204, 227); font-weight: normal;">A type of thematic map that uses contour lines or colors to indicate areas with similar regional aspects. It typically symbolizes the underlying statistic as varying continuously in space, in contrast to the discrete unit-specific variation of choropleth maps</td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(212, 230, 241); font-weight: bold;">Standardize Morbidity/Mortality Ratio (SMR)</td>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(212, 230, 241); font-weight: normal;">The ratio of observed to expected disease morbidity or mortality. Often the 'expected' is defined as the overall population (or study-specific) rate; in that case the SMR indicates the relative deviation of a specific unit from the global or overall rate</td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 2pt 2pt 6pt; background-color: rgb(169, 204, 227); font-weight: bold;">Visual hierarchy</td>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 1pt 1pt 1pt; border-top-color: rgb(255, 255, 255);  border-right-color: rgb(255, 255, 255);  border-bottom-color: rgb(255, 255, 255);  border-left-color: rgb(255, 255, 255); padding: 2pt 6pt 2pt 2pt; background-color: rgb(169, 204, 227); font-weight: normal;">The apparent order of importance of phenomena perceived by the human eye.  In cartography, this principle is a fundamental part of map composition; since the goal of map composition is to clearly convey a desired purpose, the attention of readers should be focused on the map elements that are most relevant to the purpose.</td>
+</tr>
+</table></div>
+</div>
+</div>
+<div id="spatial-thinking-in-epidemiology-1" class="section level2" number="2.2">
+<h2>
+<span class="header-section-number">2.2</span> Spatial Thinking in Epidemiology<a class="anchor" aria-label="anchor" href="#spatial-thinking-in-epidemiology-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>Making pretty maps is not the full extent of spatial epidemiology. However, <em>epidemiologic cartography</em> can sometimes be the beginning and end of <em>spatial epidemiology</em> for a given purpose. And even when an epidemiologic analysis goes well beyond mapping (perhaps to incorporate <em>aspatial</em> analysis, or to incorporate more sophisticated <em>spatial</em> analysis), the ability to produce a clear, concise, and interpretable map is an important skill.</p>
+<p>As Robb, et al<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Robb SW, Bauer SE, Vena JE. Integration of Different Epidemiological Perspectives and Applications to Spatial Epidemiology. Chapter 1 in Handbook of Spatial Epidemiology. 2016. CRC Press, Boca Raton, FL.&lt;/p&gt;"><sup>1</sup></a> write:</p>
+<blockquote>
+<p>Disease mapping can be used to provide <em>visual cues</em> about disease etiology, particularly as it relates to environmental exposures….Mapping where things are allows visualization of a baseline pattern or spatial structure of disease, potential detection of disease clusters, and the initial investigation of an exposure-disease relationship.</p>
+</blockquote>
+<p>There are aspects of cartography and map design that are general to most thematic maps of quantitative data. But there are some issues that seem especially pertinent to us as epidemiologists or quantitative population health scientists. These include the decisions we make about color choice and the process of categorizing numerical data for visual representation in a map.</p>
+<p>Why are these especially important for epidemiology? A primary purpose of a map is to visually represent <em>something meaningful</em> about the <em>spatial or geographic variation</em> in health or a health-relevant feature (e.g. an exposure or resource). Communicating what is <em>meaningful</em> and representing <em>variation</em> that matters is not solely a technical GIS task; it requires epidemiologic insight.</p>
+<p>For instance our approach to representing ratio measures such as an <em>odds ratio</em> or <em>risk ratio</em> should be different from how we represent <em>risk</em> or <em>rate</em> data, because we understand that the scale and units are distinct in each case. Similarly, we understand that characterizing variation or heterogeneity in a <em>normal</em> or <em>Gaussian</em> (bell-shaped curve) distribution is different from a uniform or a highly skewed distribution with a long right tail. This insight into how scales and values are differently interpreted epidemiologically must be translated into sensible choices in mapping.</p>
+<div id="color-choices" class="section level3" number="2.2.1">
+<h3>
+<span class="header-section-number">2.2.1</span> Color choices<a class="anchor" aria-label="anchor" href="#color-choices"><i class="fas fa-link"></i></a>
+</h3>
+<p>For most thematic maps, color is the most flexible and important tool for communication. Color, hue, and contrast can accentuate map elements or themes and minimize others. The result is that you can completely change the story your map tells with seemingly small changes to how you use color. This means you should be clear and explicit about <em>why you choose</em> a given color or sequence of colors, and beware of unintentionally misrepresenting your data by your color choices.</p>
+<p>In producing choropleth maps, we often talk about collections of colors as <em>color ramps</em> or <em>color palettes</em>, because a single color by itself is not very interesting. A quick scan of either the <code><a href="https://rdrr.io/pkg/tmaptools/man/palette_explorer.html">tmaptools::palette_explorer()</a></code> utility, or <a href="http://colorbrewer2.org/#">the Color Brewer website</a> will demonstrate that there are many colors to choose from, so is it just a matter of preference? Perhaps, but there are some guidelines to keep in mind.</p>
+<div id="sequential-palettes" class="section level4" number="2.2.1.1">
+<h4>
+<span class="header-section-number">2.2.1.1</span> Sequential palettes<a class="anchor" aria-label="anchor" href="#sequential-palettes"><i class="fas fa-link"></i></a>
+</h4>
+<p>All color palettes use the color hue, value, or saturation to represent or symbolize the values of the underlying statistical parameter of interest. When a parameter or statistic is naturally ordered, sequential and monotonic, then it makes sense to choose colors that range from light to dark. Conventionally <em>lighter</em> or more neutral tones represent lower or smaller numbers and <em>darker</em> colors and more intense tones represent higher or larger numbers. The dark colors jump out at the viewer more readily, so occasionally the inverse is used to emphasize small values, but this should be done with caution as it can be counter intuitive.</p>
+<div class="figure">
+<span style="display:block;" id="fig:unnamed-chunk-3"></span>
+<img src="images/palette-sequential.png" alt="Sequential color palettes"><p class="caption">
+FIGURE 2.1: Sequential color palettes
+</p>
+</div>
+<div class="rmdnote">
+<p>Sequential palettes are useful for epidemiologic parameters such as prevalence, risk, or rates, or continuous exposure values where the emphasis is on distinguishing higher values from lower values.</p>
+</div>
+</div>
+<div id="diverging-palettes" class="section level4" number="2.2.1.2">
+<h4>
+<span class="header-section-number">2.2.1.2</span> Diverging palettes<a class="anchor" aria-label="anchor" href="#diverging-palettes"><i class="fas fa-link"></i></a>
+</h4>
+<p>A less common choice, but one that is especially important for some epidemiologic parameters, is the diverging palette. In this pattern, the <em>neutral color</em> is in the center of the sequence, with two different color hues become darker and more intense as they go out from the center.</p>
+<div class="figure">
+<span style="display:block;" id="fig:unnamed-chunk-4"></span>
+<img src="images/palette-diverging.png" alt="Diverging color palettes"><p class="caption">
+FIGURE 2.2: Diverging color palettes
+</p>
+</div>
+<p>You might choose this color sequence for one of two reasons:</p>
+<ol style="list-style-type: decimal">
+<li>You wish to show how units vary around the overall mean or median, highlighting those that are <em>larger than</em> versus <em>smaller than</em> the overall mean/median. For instance diverging palettes might emphasize areas with particularly high burden of disease (and therefore in need of additional attention), as well as those with unexpectedly low burden of disease (and therefore worthy of understanding about protective factors).</li>
+<li>You are mapping <em>any epidemiologic measure of effect (e.g. ratio or difference measure)</em> where there are values both above and below the null ratio of <span class="math inline">\(1.0\)</span> (for ratio) or <span class="math inline">\(0\)</span> (for difference). For example if you map <em>Standardized Mortality/Morbidity Ratios</em>, <em>risk or odds ratios</em>, or <em>prevalence ratios</em>, you potentially have diverging data. The exception would be if all of the ratio values were on the same side of the null (e.g. all were <span class="math inline">\(&gt;&gt;1\)</span> or <span class="math inline">\(&lt;&lt;1\)</span>).</li>
+</ol>
+<div class="figure">
+<span style="display:block;" id="fig:unnamed-chunk-5"></span>
+<img src="images/diverge-smr.png" alt="Mapping ratio measure with divergent palette" width="50%"><p class="caption">
+FIGURE 2.3: Mapping ratio measure with divergent palette
+</p>
+</div>
+<p>In the map above, the SMR (a ratio of the county-specific prevalence of very low birth weight infants to the overall statewide live birth prevalence) varies from <span class="math inline">\(0.13\)</span> to <span class="math inline">\(2.30\)</span>. In other words, a county with an SMR of <span class="math inline">\(1.0\)</span> has the <em>average</em> prevalence of very low birthweight. This range of data is not sequential in the same way as a <em>risk</em> or <em>prevalence</em>. Instead the neutral color is assigned to counties in the range of <span class="math inline">\(0.90-1.10\)</span>, around the null. This is a way of indicating these counties are <em>average</em> or <em>typical</em>. In contrast, counties with increasing <em>excess morbidity</em> have darker green, and substantially <em>lower morbidity</em> are darker purple.</p>
+</div>
+<div id="qualitative-palettes" class="section level4" number="2.2.1.3">
+<h4>
+<span class="header-section-number">2.2.1.3</span> Qualitative palettes<a class="anchor" aria-label="anchor" href="#qualitative-palettes"><i class="fas fa-link"></i></a>
+</h4>
+<p>Qualitative refers to categories that are not naturally ordered or sequential. For instance if counties were assigned values for the single leading cause of death in the county, we might choose a qualitative palette, as a sequential or diverging palette might mislead the viewer into thinking there is some natural ordering to which causes should be more or less intense in their color.</p>
+</div>
+</div>
+<div id="choropleth-binning-styles" class="section level3" number="2.2.2">
+<h3>
+<span class="header-section-number">2.2.2</span> Choropleth binning styles<a class="anchor" aria-label="anchor" href="#choropleth-binning-styles"><i class="fas fa-link"></i></a>
+</h3>
+<p>A second topic relevant to the intersection of <em>cartography</em> and <em>epidemiologic thinking</em> is the means by which we choose cut-points for visualizing data. In other words for a map to visually represent some underlying statistical value, we have to assign or map numerical values to colors. How you do that depends greatly on the intended message or story your map needs to tell. Are you interested in distinguish units that rank higher or lower in values? Or are you primarily focused on finding extreme outliers, with variation in the ‘<em>middle</em>’ of the distribution of less interest? These distinct purposes give rise to different decisions about how to assign colors to numerical values in your data.</p>
+<div class="figure">
+<span style="display:block;" id="fig:unnamed-chunk-6"></span>
+<img src="images/cutpoints-vlbw.png" alt="Comparing binning styles with same data" width="75%"><p class="caption">
+FIGURE 2.4: Comparing binning styles with same data
+</p>
+</div>
+<p>As discussed in the lecture, there are numerous methods or styles for categorizing continuous data for choropleth mapping (e.g. identical data is summarized under four different styles in figure above). Cynthia Brewer (of <a href="https://colorbrewer2.org/#type=sequential&amp;scheme=BuGn&amp;n=3">ColorBrewer</a> fame) and Linda Pickle <span class="citation">(<a href="kde-extract.html#ref-brewer_evaluation_2002">2002</a>)</span> sought to evaluate which styles are most effective for communicating the spatial patterns of epidemiologic data.</p>
+<p>As cartographers, Brewer &amp; Pickle were critical of the epidemiologists’ over-reliance on quantile cut-points, given many other strategies that seemed to have cartographic advantages. However, after randomizing map ‘<em>readers</em>’ to interpret maps of the same underlying epidemiologic data using <em>seven different styles</em>, they determined that readers could most accurately and reliably interpret the disease patterns in maps using <em>quantile cut-points</em>. While there are benefits of the other styles for some purposes, for the common use of communicating which spatial areas <em>rank higher or lower</em> in terms of disease burden, quantiles are most straightforward.</p>
+<div id="mapping-time-series" class="section level4" number="2.2.2.1">
+<h4>
+<span class="header-section-number">2.2.2.1</span> Mapping time series<a class="anchor" aria-label="anchor" href="#mapping-time-series"><i class="fas fa-link"></i></a>
+</h4>
+<p>It is common in spatial epidemiology that we want to map the spatial patterns of disease for several different snapshots in time as a series to observe the evolution of disease burden over time. But changing patterns over time raises additional questions about how to make cuts to the data. There are several options for determining the cut-points when you have a time series:</p>
+<ol style="list-style-type: decimal">
+<li>Pool all of the years data together before calculating the cut-points (e.g. using quantiles). Use the pooled cut-points for all years.</li>
+<li>Create custom year-specific cut-points that reflect the distribution of data for each year separately.</li>
+<li>Create cut-points based on a single year and apply them to all other years.</li>
+</ol>
+<div class="figure">
+<span style="display:block;" id="fig:unnamed-chunk-7"></span>
+<img src="images/time-series-ga-same-cuts.png" alt="Georgia MVC deaths by year with a common scale"><p class="caption">
+FIGURE 2.5: Georgia MVC deaths by year with a common scale
+</p>
+</div>
+<p>The map above of Georgia motor vehicle crash mortality data in three different years (2005, 2014, 2017), was created in <code>tmap</code> using the <code>tm_facet()</code> option where the the <code>by =</code> was year. As a result, the quantile cut-points represent the breaks <em>pooling all observations across the three years</em>. In other words the cut-points come from 159 counties times three years: 477 values.</p>
+<p>By having a common legend that applies to all three maps, this strategy is useful for comparing <em>differences in absolute rates</em> across years.</p>
+<div class="figure">
+<span style="display:block;" id="fig:unnamed-chunk-8"></span>
+<img src="images/time-series-us-quantiles.jpg" alt="U.S. heart disease mortality with a year-specific scales"><p class="caption">
+FIGURE 2.6: U.S. heart disease mortality with a year-specific scales
+</p>
+</div>
+<p>The map above of heart disease mortality rates by county in two years (1973-4; 2009-10) uses quantile breaks calculated <em>separately for each time period</em>. This was done in part because the heart disease mortality rate declined so much between these years that a scale that distinguished highs from lows on one map would not distinguish anything on the other map. In this case what is being compared is not the <em>absolute rates</em> but the <em>relative ranking of counties</em> in the two years.</p>
+</div>
+</div>
+</div>
+<div id="spatial-analysis-in-epidemiology-1" class="section level2" number="2.3">
+<h2>
+<span class="header-section-number">2.3</span> Spatial Analysis in Epidemiology<a class="anchor" aria-label="anchor" href="#spatial-analysis-in-epidemiology-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>Every spatial epidemiology project must include attention to data acquisition, cleaning, integration, and visualization. The specific workflow is driven largely by the overarching epidemiologic question, purpose, or goal. In this section we use a specific question to illustrate key steps to data preparation for epidemiologic cartography.</p>
+<blockquote>
+<p><strong>Case Example Objective</strong>: Create a choropleth map visualizing geographic variation in the all-cause mortality rate for U.S. counties in 2016-2018. Compare this to a choropleth map of % uninsured in U.S. counties.</p>
+</blockquote>
+<p>This objective will be directly relevant for the lab this week as well as for the <em>Visualizing US Mortality, Visual Portfolio</em>, an assignment due later in the semester.</p>
+<p>Although this specific question dictates specific data needs, these four types of data are frequently needed to produce a map of a health outcome or state:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Numerator data</strong>, in this case representing the count of deaths per county in the target year</li>
+<li>
+<strong>Denominator data</strong>, in this case representing the population at risk for death in each county in the target year</li>
+<li>
+<strong>Contextual or covariate data</strong>, in this case the prevalence uninsured for each U.S. county</li>
+<li>
+<strong>Geographic (geometry) data</strong> representing the shapes and boundaries of U.S. counties</li>
+</ol>
+<div id="obtaining-and-preparing-numerator-data" class="section level3" number="2.3.1">
+<h3>
+<span class="header-section-number">2.3.1</span> Obtaining and preparing numerator data<a class="anchor" aria-label="anchor" href="#obtaining-and-preparing-numerator-data"><i class="fas fa-link"></i></a>
+</h3>
+<p>The event of interest (e.g. the numerator in a risk, rate, or prevalence) can come from many sources. If you are conducting primary data collection, it arises from your study design and measurement. When using secondary data, it is common to use surveillance data (e.g. vital records, notifiable diseases, registries, etc) or administrative data as a source of health events.</p>
+<p>When using secondary data sources owned or managed by another entity, one challenge that can occur is <em>suppression of data</em> to protect privacy. For example the National Center for Health Statistics mortality data available from <a href="https://wonder.cdc.gov/">CDC WONDER</a> suppresses the count of deaths, as well as the crude mortality rate, whenever the <em>numerator count is less than ten events</em>. There can also be instances when a local or state public health agency fails to report data to NCHS, producing missing values.</p>
+<div class="rmdcaution">
+<p>Depending on the data format, it is possible that either <strong>missing</strong> or <strong>suppressed</strong> data could be inadvertently imported into R as <em>zero-count</em> rather than missing. It is therefore critically important to understand the data source and guidelines. The decision about how to manage zero, missing, and suppressed data is an epidemiologic choice, but one that must be addressed <em>before creating a map</em>.</p>
+</div>
+<div class="rmdtip">
+<p><strong>How to deal with data suppression</strong>. There are many reasons your target data may fall below thresholds for suppression. Perhaps the outcome event is quite rare, or you are stratifying by multiple demographic factors, or perhaps you are counting at a very small geographic unit. If suppression is problematic for mapping, consider pooling over multiple years, reducing demographic stratification, or using larger geographic areas to increase event count and reduce the number of suppressed cells.</p>
+</div>
+<p>For this example, we have downloaded all-cause mortality counts by county from CDC WONDER for 2016-2018 (pooling over three years to reduce suppression). In Lab we will discuss the procedure for acquiring data from the web. After importing the data this is how it appears.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">death</span><span class="op">)</span></span></code></pre></div>
+<pre><code>##    FIPS             County Deaths Population     crude
+## 1 01001 Autauga County, AL    536      55601  964.0114
+## 2 01003 Baldwin County, AL   2357     218022 1081.0836
+## 3 01005 Barbour County, AL    312      24881 1253.9689
+## 4 01007    Bibb County, AL    276      22400 1232.1429
+## 5 01009  Blount County, AL    689      57840 1191.2172
+## 6 01011 Bullock County, AL    112      10138 1104.7544</code></pre>
+</div>
+<div id="obtaining-and-preparing-denominator-or-contextual-data" class="section level3" number="2.3.2">
+<h3>
+<span class="header-section-number">2.3.2</span> Obtaining and preparing denominator or contextual data<a class="anchor" aria-label="anchor" href="#obtaining-and-preparing-denominator-or-contextual-data"><i class="fas fa-link"></i></a>
+</h3>
+<p>The mortality data accessed from CDC included both numerator (count of deaths) and denominator (population at risk). However there are instances where you may have one dataset that provides the health event data (numerator), but you need to link it to a population denominator in order to calculate risk, rate, or prevalence.</p>
+<p>The U.S. Census Bureau maintains the most reliable population count data for the U.S., and it is available in aggregates from Census Block Group, Census Tract, Zip code tabulation area, City or Place, County, State, and Region.</p>
+<p>Census data can be aggregated as total population or stratified by age, gender, race/ethnicity, and many other variables. The census data also contains measures of social, economic, and housing attributes which may be relevant to measure <em>context</em> or <em>exposures</em> in spatial epidemiologic analyses. There are two broad types of demographic and socioeconomic data released by the Census Bureau.</p>
+<ul>
+<li>
+<strong>Decennial Census</strong> tables which (theoretically) count 100% of the population every 10 years. These can be cross-classified by age, race/ethnicity, sex, and householder status (e.g. whether head of house owns or rents and how many people live in house)</li>
+<li>
+<strong><a href="https://www.census.gov/programs-surveys/acs">American Community Survey (ACS)</a></strong> tables which provide a much larger number of measures but are based on samples rather than complete counts. The ACS began in the early 2000’s and is a continually sampled survey. Despite being collected every year, for many small areas (e.g. census tracts or even counties) there are not enough responses in a single year to make reliable estimates. Therefore ACS data pooled into 5-year moving-window datasets. For instance the 2015-2019 ACS reports estimates for all responses collected during that time period, and these are available from the Census Block Group up.</li>
+</ul>
+<p>You may have accessed Census or ACS data directly from the Census Bureau website for other classes or tasks in the past. In the interest of <em>reproducibility</em> and efficiency, we introduce the <code>tidycensus</code> package in <code>R</code>. It is an excellent tool for acquiring either Decennial Census or ACS data directly within <code>R</code>. The advantage of doing so is twofold:</p>
+<ol style="list-style-type: decimal">
+<li>It can be quicker once you learn how to do it;
+2, It makes your data acquisition fully reproducible without any unrecorded steps happening in web browsers. In other words you have actual code that details what you downloaded and what you did to it (rather than un-documented steps of clicking and downloading from a browser).</li>
+</ol>
+<div class="rmdnote">
+<p>We will practice the code in the next few sections in lab. It is included here as a primer. In these sections I walk through <strong>one way</strong> to download and prepare data to quantify the county-level prevalence of the population who are uninsured, as this might be a covariate of interest when examining spatial variation in mortality.</p>
+<p>I selected the code below because it is <em>relatively</em> efficient, although you may find some of it complex or confusing. I include it for those who would like to explore other data-manipulation functions in <code>R</code>. Please note that you do not need to learn all of the functions in this Census data acquisitions section below for this course, although you might find these or related approaches useful. Note also that there are many ways to accomplish anything in <code>R</code>, and you could achieve the same ends with different strategies.</p>
+</div>
+<div id="setting-up-census-api" class="section level4" number="2.3.2.1">
+<h4>
+<span class="header-section-number">2.3.2.1</span> Setting up Census API<a class="anchor" aria-label="anchor" href="#setting-up-census-api"><i class="fas fa-link"></i></a>
+</h4>
+<p>To access any Census products (e.g. attribute tables or geographic boundary files) using the <code>tidycensus</code> package, you need to <em>register</em> yourself by declaring your API key. If you haven’t already done so, <a href="https://api.census.gov/data/key_signup.html">go here to register for the key</a>.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Only do this if you haven't already done it; it should only need to be done once.</span></span>
+<span></span>
+<span><span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/census_api_key.html">census_api_key</a></span><span class="op">(</span><span class="st">'YourKeyHere'</span>, install <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> </span></code></pre></div>
+</div>
+<div id="choosing-variables" class="section level4" number="2.3.2.2">
+<h4>
+<span class="header-section-number">2.3.2.2</span> Choosing Variables<a class="anchor" aria-label="anchor" href="#choosing-variables"><i class="fas fa-link"></i></a>
+</h4>
+<p>By far the biggest challenge of requesting data from the Census Bureau is knowing <em>what you want</em>, and <em>where it is stored</em>. Census data are distributed as aggregated counts contained in <em>specific tables</em> (each has a unique ID), and made up of <em>specific variables</em> (also a unique ID composed of table ID plus a unique ID). There are two ways to find variables:</p>
+<ul>
+<li>You could go to the Census website and browse around. For instance the <a href="https://data.census.gov/cedsci/">Census Data Explorer website</a> is one way to browse the topics and variables</li>
+<li>You could download all of the variables for a given year into <code>R</code>, and use filters to search it.</li>
+</ul>
+<p>This code queries the Census website (assuming you have internet connection) and requests a list of all variables for the ACS 5-year pooled dataset (e.g. <code>acs5</code>) and for the window of time ending in 2018 (e.g. 2014-2018). I also specify <code>cache = T</code> which just means to save the results for quicker loading if I ask again in the future.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://walker-data.com/tidycensus/">tidycensus</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">all_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://walker-data.com/tidycensus/reference/load_variables.html">load_variables</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fl">2018</span>, dataset <span class="op">=</span> <span class="st">'acs5'</span>, cache <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">all_vars</span><span class="op">)</span></span></code></pre></div>
+<p>It may be easiest to look at the dataset using the <code><a href="https://rdrr.io/r/utils/View.html">View()</a></code> function. When you do so, you see the three variables, and you have the option to click the <strong>Filter</strong> button (upper left of View pane; looks like a funnel). The <em>Filter</em> option is one way to search key words in either the <code>label</code> or <code>concept</code> column.</p>
+<p>We are interested in capturing the prevalence of uninsured in each county. Try this:</p>
+<ul>
+<li>Go to View mode of variables (e.g. <code>View(all_vars)</code>)</li>
+<li>Click the <em>Filter</em> button</li>
+<li>Type <code>insurance</code> in the <code>concept</code> field</li>
+<li>Type <code>B27001</code> in the <code>name</code> field</li>
+</ul>
+<div class="figure">
+<span style="display:block;" id="fig:unnamed-chunk-13"></span>
+<img src="images/acs-var-view.PNG" alt="Screenshot of RStudio View() of ACS variables"><p class="caption">
+FIGURE 2.7: Screenshot of RStudio View() of ACS variables
+</p>
+</div>
+<p>What we want is a list of the specific tables and variable ID’s to extract from the Census. In lab we will use some more detailed code to accomplish this goal.</p>
+<p>You may have noticed that the full list of ACS variables has nearly 27,000 variables! In the code below I use some tricks to filter the huge list of all variables to get only the names I want. It relies on the <code>tidyverse</code> package <code>stringr</code> which is great for manipulating character variables (this is great for many data science tasks; <a href="https://stringr.tidyverse.org/">read more about <code>stringr</code> here</a>). In this case I am using it to filter down to just the table I want (e.g. <code>B27001</code>), and then to get the names of the variables that contain the string <em>‘No health insurance’</em>.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="va">all_vars</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">name</span>, <span class="st">'B27001'</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>  <span class="co"># this limits to rows for the B27001 table</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">label</span>, <span class="st">'No health insurance'</span><span class="op">)</span><span class="op">)</span>  <span class="co"># this limits to rows with this text</span></span>
+<span></span>
+<span><span class="va">myVars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'B27001_001'</span>, <span class="va">a</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span></code></pre></div>
+<p>Here is the list of variables we want to acquire; each one represents a count of uninsured at each of multiple age groups. We will sum them up to get a total population uninsured prevalence.</p>
+<pre><code>##  [1] "B27001_001" "B27001_005" "B27001_008" "B27001_011" "B27001_014"
+##  [6] "B27001_017" "B27001_020" "B27001_023" "B27001_026" "B27001_029"
+## [11] "B27001_033" "B27001_036" "B27001_039" "B27001_042" "B27001_045"
+## [16] "B27001_048" "B27001_051" "B27001_054" "B27001_057"</code></pre>
+</div>
+<div id="retrieving-data-from-census" class="section level4" number="2.3.2.3">
+<h4>
+<span class="header-section-number">2.3.2.3</span> Retrieving data from Census<a class="anchor" aria-label="anchor" href="#retrieving-data-from-census"><i class="fas fa-link"></i></a>
+</h4>
+<p>To actually retrieve data from the Census we use the function <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html">get_acs()</a></code> (or if you were getting decennial data the function would be <code><a href="https://walker-data.com/tidycensus/reference/get_decennial.html">get_decennial()</a></code>). When you request data you must specify the geography (e.g. do you want counts for states, counties, census tracts, census block groups?), the variables, the year, and the dataset. Look at <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html">?get_acs</a></code> to read more about options.</p>
+<p>The following code chunks use the <code>dplyr</code> and <code>tidyverse</code> verbs and the <code>%&gt;%</code> (pipe) to connect data steps together. This is complex at first, but it is worth carefully examining how each step works. If you are not familiar with this syntax, it would probably be helpful to <a href="dplyr.html#dplyr">review the Appendix section on <code>dplyr</code></a>.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># First, request the data from ACS</span></span>
+<span><span class="va">insure_tidy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://walker-data.com/tidycensus/reference/get_acs.html">get_acs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'county'</span>,</span>
+<span>                     variables <span class="op">=</span> <span class="va">myVars</span>,</span>
+<span>                     year <span class="op">=</span> <span class="fl">2018</span>, </span>
+<span>                     survey <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">moe</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Look at the resulting object</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">insure_tidy</span><span class="op">)</span></span></code></pre></div>
+<div class="rmdcaution">
+<p>Looking at the first few rows of the data object <code>insure_tidy</code> above, you might be surprised that there is a column labeled <code>variable</code>, and the cells within that column are actually what we <em>thought were the variable names</em>! That is because these data are structured in a <code>tidy</code> format, which happens to be <em>long</em> not <em>wide</em>. <a href="dplyr.html#pivot_">Read more about transposing data here</a>. In the following steps we will reshape this data to be more useful.</p>
+</div>
+<p>What this code does:</p>
+<ul>
+<li>define the <code>geography =</code> as county.</li>
+<li>Specify the vector (previously created and named <code>myVars</code>) of variables to download</li>
+<li>Specify the year of interest. Note that 2018 references the <em>2014-2018</em> 5-year window</li>
+<li>specify the survey, which will most often be <code>acs5</code>
+</li>
+</ul>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Now I pull out the denominator</span></span>
+<span><span class="va">insure_denom</span> <span class="op">&lt;-</span> <span class="va">insure_tidy</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">variable</span> <span class="op">==</span> <span class="st">'B27001_001'</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">rename</span><span class="op">(</span>TOTPOP <span class="op">=</span> <span class="va">estimate</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">variable</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Look at the resulting object</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">insure_denom</span><span class="op">)</span></span></code></pre></div>
+<pre><code>## # A tibble: 6 × 3
+##   GEOID NAME                    TOTPOP
+##   &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
+## 1 01001 Autauga County, Alabama  54277
+## 2 01003 Baldwin County, Alabama 205452
+## 3 01005 Barbour County, Alabama  22882
+## 4 01007 Bibb County, Alabama     20468
+## 5 01009 Blount County, Alabama   57169
+## 6 01011 Bullock County, Alabama   9978</code></pre>
+<p>The code above was necessary because most of the variables were age-specific counts of the number of uninsured people. But one variable, <code>B27001_001</code> is the count of all included in the table. In other words, it is the <em>denominator</em> for calculating the prevalence of uninsured. Therefore I did the following in the code above:</p>
+<ul>
+<li>
+<code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> restricts to only the rows of data where the variable is the denominator count (B27001_001). Filter is like <code>where</code> in SAS</li>
+<li>
+<code>rename()</code> is a way to rename variables to my own liking</li>
+<li>
+<code>select()</code> drops the variable called <code>variable</code>
+</li>
+</ul>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Now I sum up all the variables for the numerator</span></span>
+<span><span class="va">insure_num</span> <span class="op">&lt;-</span> <span class="va">insure_tidy</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">variable</span> <span class="op">!=</span> <span class="st">'B27001_001'</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">GEOID</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>no_insure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">insure_num</span><span class="op">)</span></span></code></pre></div>
+<pre><code>## # A tibble: 6 × 2
+##   GEOID no_insure
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 01001      3875
+## 2 01003     20864
+## 3 01005      2558
+## 4 01007      1619
+## 5 01009      6303
+## 6 01011      1076</code></pre>
+<p>The code above addresses an issue common to census tables: they may not be constructed in the way you want them. As discussed above, in this case the values are counts for each age group, but we only want a single count for the entire population of each county. Therefore, it is necessary to <em>sum across</em> or <em>aggregate</em> the counts over all age groups to get a single count (the numerator number of uninsured) for each county.</p>
+<p>The strategy used above was specific to the data being in <em>long format</em>, which happens to be <code>tidy</code> data in this case. <a href="dplyr.html#pivot_">Read about changing between long and wide here</a>.</p>
+<p>The code above achieves this through steps:</p>
+<ul>
+<li>
+<code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> using the <code>!=</code> mean “<em>is <strong>not</strong> equal to</em>”; this simply removes the denominator variable, so that we are only summing over numerator counts</li>
+<li>
+<code>group_by()</code> is a very useful <code>dplyr</code> verb; it is similar to using <code>class</code> in SAS, and tells <code>R</code> to do something separately for each group (e.g. each <code>GEOID</code> or county in this case)</li>
+<li>
+<code>summarise()</code> is a verb that works hand-in-hand with <code>group_by()</code>. The grouping declares which groups, but the <code>summarise()</code> tells what to do. In this case we just want to count up all of those uninsured across all age gruops.</li>
+</ul>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Finally, merge the numerator and denominator in order to calculate prevalence</span></span>
+<span><span class="va">uninsured</span> <span class="op">&lt;-</span> <span class="va">insure_denom</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">insure_num</span>, by <span class="op">=</span> <span class="st">'GEOID'</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>uninsured <span class="op">=</span> <span class="va">no_insure</span> <span class="op">/</span> <span class="va">TOTPOP</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">GEOID</span>, <span class="va">uninsured</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Take a look at the resulting object</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">uninsured</span><span class="op">)</span></span></code></pre></div>
+<pre><code>## # A tibble: 6 × 2
+##   GEOID uninsured
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 01001    0.0714
+## 2 01003    0.102 
+## 3 01005    0.112 
+## 4 01007    0.0791
+## 5 01009    0.110 
+## 6 01011    0.108</code></pre>
+<p>This was a simple merge, but it is worth mentioning a few of the steps:</p>
+<ul>
+<li>
+<code>left_join()</code> is one of a famiy of <em>merging</em> verbs. The <em>left</em> in <code>left_join()</code> simply means start with the first table (the one on the left) and merge with the second table. The implications are with whether all rows or only rows in the left or the right (first or second) table are retained. In this case the <em>left</em> of <em>first</em> table is <code>insure_denom</code> and the <em>right</em> or <em>second</em> table is <em>insure_num</em>)</li>
+<li>
+<code>mutate()</code> calculates the uninsured prevalence</li>
+<li>
+<code>select()</code> excludes unnecessary variables</li>
+</ul>
+<div class="rmdnote">
+<p>The code process above was complex. While it was specific to this exact scenario, each scenario might require different steps. The challenge for you, the new spatial analyst, is to think through in your mind how the data looks at the beginning and how you want it to look at the end. Then create a sequence of steps that progresses from beginning to end. It takes practice, but is worthwhile for spatial epidemiology, but also for data science and processing more generally.</p>
+</div>
+</div>
+</div>
+<div id="obtaining-and-preparing-geographic-data" class="section level3" number="2.3.3">
+<h3>
+<span class="header-section-number">2.3.3</span> Obtaining and preparing geographic data<a class="anchor" aria-label="anchor" href="#obtaining-and-preparing-geographic-data"><i class="fas fa-link"></i></a>
+</h3>
+<p>The final type of data needed is the geographic or geometry data. Again, the source for geometry data varies by the study specifics: you may need polygons (e.g. political or administrative boundaries), lines (e.g. transportation networks), or points (e.g. hospitals, food stores, toxic waste sites, etc). On the other hand you may need or have data that are in raster format, including weather or air pollution surfaces. There are open-access versions of many types of geographic data online.</p>
+<p>For choropleth mapping, area units including administrative and political boundaries are commonly used. In the U.S. context, the Census geographies are frequently used, including blocks, block groups, tracts, zip-code tabulation areas, counties, cities &amp; places, metropolitan areas, tribal areas, states, and regions. In this section I provide a brief introduction to downloading census boundary files directly into <code>R</code>.</p>
+<div id="obtain-geometry-data-from-tidycensus" class="section level4" number="2.3.3.1">
+<h4>
+<span class="header-section-number">2.3.3.1</span> Obtain geometry data from <code>tidycensus</code><a class="anchor" aria-label="anchor" href="#obtain-geometry-data-from-tidycensus"><i class="fas fa-link"></i></a>
+</h4>
+<p>The first option is a very minor modification to the code in the previous section acquiring census count data. The <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html">get_acs()</a></code> function has an argument <code>geometry =</code> that is <code>FALSE</code> by default. However, if you change it to <code>geometry = TRUE</code>, you will automatically retrieve the data as an <code>sf</code> object including a geometry column!</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">insure_tidy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://walker-data.com/tidycensus/reference/get_acs.html">get_acs</a></span><span class="op">(</span>geography <span class="op">=</span> <span class="st">'county'</span>,</span>
+<span>                     variables <span class="op">=</span> <span class="va">myVars</span>,</span>
+<span>                     year <span class="op">=</span> <span class="fl">2018</span>, </span>
+<span>                     geometry <span class="op">=</span> <span class="cn">TRUE</span>,   <span class="co"># added geometry = T</span></span>
+<span>                     survey <span class="op">=</span> <span class="st">'acs5'</span><span class="op">)</span> </span></code></pre></div>
+<div class="rmdtip">
+<p>One other argument to <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html">get_acs()</a></code> not demonstrated here is <code>shift_geo</code>. It is <code>FALSE</code> by default, but if set to <code>shift_geo = TRUE</code>, it will return boundaries that have been projected to Albers Equal Area, and where the states of Hawaii and Alaska are artificially shifted to <em>fit</em> on a thematic map of the U.S.</p>
+</div>
+</div>
+<div id="obtain-geometry-data-from-tigris" class="section level4" number="2.3.3.2">
+<h4>
+<span class="header-section-number">2.3.3.2</span> Obtain geometry data from <code>tigris</code><a class="anchor" aria-label="anchor" href="#obtain-geometry-data-from-tigris"><i class="fas fa-link"></i></a>
+</h4>
+<p>The <code>tidycensus</code> package actually requests the geometry by depending on another package called <code>tigris</code> (the Census geography files are called <em>TIGER</em> files). If you are obtaining both attributes (e.g. population counts) and geometries at the same time, the <code>tidycensus</code> package makes the most sense. However, sometimes you <em>only need the geometry</em>, perhaps because the other data come from sources other than the Census Bureau.</p>
+<p>If you want to directly obtain areal boundary units, coastline data, road or rail networks, voting districts, or other spatial data maintained by the Census Bureau, consider using the <code>tigris</code> package. Try looking at the help documentation (e.g. <code><a href="https://rdrr.io/pkg/tigris/man/tigris.html">?tigris</a></code>, then click the <em>Index</em> link at the bottom to see all of the options).</p>
+<p>Here I demonstrate by retrieving the U.S. county boundaries:</p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris">tigris</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>tigris_use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">us</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tigris/man/counties.html">counties</a></span><span class="op">(</span>cb <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                        resolution <span class="op">=</span> <span class="st">'5m'</span>, </span>
+<span>                        year <span class="op">=</span> <span class="fl">2018</span>,</span>
+<span>                        class <span class="op">=</span> <span class="st">'sf'</span><span class="op">)</span></span></code></pre></div>
+<p>Here is what the code above does:</p>
+<ul>
+<li>The <code><a href="https://rdrr.io/pkg/tigris/man/counties.html">counties()</a></code> function is one of dozens in <code>tigris</code> for downloading specific kinds of boundary data</li>
+<li>
+<code>cb = TRUE</code> adjusts the level of detail or resolution of the boundaries. By default <code>cb = FALSE</code> returns the most detailed data, which is quite large. Setting <code>cb = TRUE</code> defaults to a generalized (1:500k scale) shape.</li>
+<li>
+<code>resolution = '5m'</code> is a further specification that I want an even more generalized boundary file. The 1:5 million scale is more coarse in terms of resolution of curves in county boundaries, but it is also a smaller file. You must decide the balance between file size and resolution for a specific need.</li>
+<li>
+<code>year = 2018</code> specifies which vintage of boundary files. Tracts, counties, cities, etc all change boundaries from year to year.</li>
+<li>
+<code>class = 'sf'</code> results in the object returned being a <code>sf</code> object, rather than <code>sp</code> class data (the default).</li>
+</ul>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">us</span><span class="op">)</span></span></code></pre></div>
+<pre><code>##    STATEFP            COUNTYFP           COUNTYNS           AFFGEOID        
+##  Length:3233        Length:3233        Length:3233        Length:3233       
+##  Class :character   Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+##                                                                             
+##                                                                             
+##                                                                             
+##     GEOID               NAME               LSAD               ALAND          
+##  Length:3233        Length:3233        Length:3233        Min.   :8.209e+04  
+##  Class :character   Class :character   Class :character   1st Qu.:1.079e+09  
+##  Mode  :character   Mode  :character   Mode  :character   Median :1.563e+09  
+##                                                           Mean   :2.833e+09  
+##                                                           3rd Qu.:2.367e+09  
+##                                                           Max.   :3.770e+11  
+##      AWATER                   geometry   
+##  Min.   :0.000e+00   MULTIPOLYGON :3233  
+##  1st Qu.:7.038e+06   epsg:4269    :   0  
+##  Median :1.950e+07   +proj=long...:   0  
+##  Mean   :2.161e+08                       
+##  3rd Qu.:6.159e+07                       
+##  Max.   :2.599e+10</code></pre>
+<p>We can see from the summary that the data has a CRS/projection EPSG code of 4269 (it is unprojected).</p>
+<p>What does this boundary file look like?</p>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu">st_geometry</span><span class="op">(</span><span class="va">us</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="02-cartography-epi-1_files/figure-html/unnamed-chunk-25-1.png" width="672"></div>
+<p>The Census boundaries include information for all U.S. counties <em>and territories</em>! Therefore the map looks this way because Guam, American Samoa, Puerto Rico, as well as Hawaii and Alaska are included. If you were only interested in mapping the “<em>lower 48</em>” or contiguous states, you could exclude these. In the code below, I also transform or project the data to Albers Equal Area using EPSG code</p>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">us</span> <span class="op">&lt;-</span> <span class="va">us</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">STATEFP</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'02'</span>, <span class="st">'15'</span>, <span class="st">'66'</span>, <span class="st">'60'</span>, <span class="st">'78'</span>, <span class="st">'72'</span>, <span class="st">'69'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">GEOID</span>, <span class="va">STATEFP</span>, <span class="va">COUNTYFP</span>, <span class="va">NAME</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">st_transform</span><span class="op">(</span><span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu">st_geometry</span><span class="op">(</span><span class="va">us</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="02-cartography-epi-1_files/figure-html/unnamed-chunk-26-1.png" width="672"></div>
+</div>
+</div>
+<div id="merging-attributes-and-geography" class="section level3" number="2.3.4">
+<h3>
+<span class="header-section-number">2.3.4</span> Merging Attributes and Geography<a class="anchor" aria-label="anchor" href="#merging-attributes-and-geography"><i class="fas fa-link"></i></a>
+</h3>
+<p>A final step in data preparation is bringing together the attribute data and the geometry data, assuming it has not already been incorporated. Assuming the attributes are a <code>data.frame</code> (or perhaps a <code>tibble</code>, which is a <code>tidyverse</code> data table object), and the geometry is a <code>sf</code> object (which also has class <code>data.frame</code>), the merge is straightforward. Here is what is needed for merging or joining data:</p>
+<ul>
+<li>Unique key or ID variable in the attribute data <em>that matches with the ID in the geometry data</em>
+</li>
+<li>Unique key or ID variable in the geometry data <em>that matches with the ID in the attribute data</em>
+</li>
+<li>Matching ID’s <strong>does not require same variable name</strong> but <strong>does require same variable type</strong>.</li>
+</ul>
+<p>If you are merging several datasets, and one of them is an <code>sf</code> object, put that dataset first in the sequence, as that will insure that the final object remains of class <code>sf</code>. If you cannot put the <code>sf</code> first, you may need to <em>re-define</em> the object as <code>sf</code> at the end. <a href="sf-overview.html#st-as-sf">See the Appendix on <code>st_as_sf()</code> for more detail</a>.</p>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">us2</span> <span class="op">&lt;-</span> <span class="va">us</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">death</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'GEOID'</span> <span class="op">=</span> <span class="st">'FIPS'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">uninsured</span>, by <span class="op">=</span> <span class="st">'GEOID'</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="mapping-mortality-uninsured" class="section level3" number="2.3.5">
+<h3>
+<span class="header-section-number">2.3.5</span> Mapping Mortality &amp; Uninsured<a class="anchor" aria-label="anchor" href="#mapping-mortality-uninsured"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/">tmap</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">t1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">us2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span><span class="st">'crude'</span>,</span>
+<span>          style <span class="op">=</span> <span class="st">'quantile'</span>,</span>
+<span>          palette <span class="op">=</span> <span class="st">'BuPu'</span>,</span>
+<span>          title <span class="op">=</span> <span class="st">'Rate per 100,000 py'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_credits.html">tm_credits</a></span><span class="op">(</span><span class="st">'Source: CDC Wonder'</span>,</span>
+<span>           position <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'RIGHT'</span>, <span class="st">'BOTTOM'</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>main.title <span class="op">=</span> <span class="st">'All-cause mortality rate, 2016-2018'</span>,</span>
+<span>          bg.color <span class="op">=</span> <span class="st">'grey85'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">t2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">us2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span><span class="st">'uninsured'</span>,</span>
+<span>          style <span class="op">=</span> <span class="st">'quantile'</span>,</span>
+<span>          palette <span class="op">=</span> <span class="st">'YlOrRd'</span>,</span>
+<span>          title <span class="op">=</span> <span class="st">'% Uninsured'</span>,</span>
+<span>          legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span><span class="op">(</span><span class="va">x</span> <span class="op">*</span> <span class="fl">100</span>, </span>
+<span>                                                              digits<span class="op">=</span><span class="fl">1</span>, </span>
+<span>                                                              format<span class="op">=</span><span class="st">"f"</span><span class="op">)</span>, <span class="st">"%"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_credits.html">tm_credits</a></span><span class="op">(</span><span class="st">'Source: American Community Survey'</span>,</span>
+<span>           position <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'RIGHT'</span>, <span class="st">'BOTTOM'</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>main.title <span class="op">=</span> <span class="st">'Uninsured Prevalence, 2014-2018'</span>,</span>
+<span>          bg.color <span class="op">=</span> <span class="st">'grey85'</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="02-cartography-epi-1_files/figure-html/unnamed-chunk-28-1.png" width="672"></div>
+
+</div>
+</div>
+</div>
+
+  <div class="chapter-nav">
+<div class="prev"><a href="locating-spatial-epidemiology.html"><span class="header-section-number">1</span> Locating Spatial Epidemiology</a></div>
+<div class="next"><a href="cartography-for-epidemiology-ii-spatial-ethics.html"><span class="header-section-number">3</span> Cartography for Epidemiology II: Spatial Ethics</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#cartography-for-epidemiology-i"><span class="header-section-number">2</span> Cartography for Epidemiology I</a></li>
+<li>
+<a class="nav-link" href="#getting-ready-1"><span class="header-section-number">2.1</span> Getting Ready</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#learning-objectives-1"><span class="header-section-number">2.1.1</span> Learning objectives</a></li>
+<li><a class="nav-link" href="#additional-resources-1"><span class="header-section-number">2.1.2</span> Additional Resources</a></li>
+<li><a class="nav-link" href="#important-vocabulary-1"><span class="header-section-number">2.1.3</span> Important Vocabulary</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#spatial-thinking-in-epidemiology-1"><span class="header-section-number">2.2</span> Spatial Thinking in Epidemiology</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#color-choices"><span class="header-section-number">2.2.1</span> Color choices</a></li>
+<li><a class="nav-link" href="#choropleth-binning-styles"><span class="header-section-number">2.2.2</span> Choropleth binning styles</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#spatial-analysis-in-epidemiology-1"><span class="header-section-number">2.3</span> Spatial Analysis in Epidemiology</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#obtaining-and-preparing-numerator-data"><span class="header-section-number">2.3.1</span> Obtaining and preparing numerator data</a></li>
+<li><a class="nav-link" href="#obtaining-and-preparing-denominator-or-contextual-data"><span class="header-section-number">2.3.2</span> Obtaining and preparing denominator or contextual data</a></li>
+<li><a class="nav-link" href="#obtaining-and-preparing-geographic-data"><span class="header-section-number">2.3.3</span> Obtaining and preparing geographic data</a></li>
+<li><a class="nav-link" href="#merging-attributes-and-geography"><span class="header-section-number">2.3.4</span> Merging Attributes and Geography</a></li>
+<li><a class="nav-link" href="#mapping-mortality-uninsured"><span class="header-section-number">2.3.5</span> Mapping Mortality &amp; Uninsured</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/mkram01/EPI563-SpatialEPI/blob/master/02-cartography-epi-1.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/mkram01/EPI563-SpatialEPI/edit/master/02-cartography-epi-1.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>EPI 563: Spatial Epidemiology, Fall 2023</strong>" was written by Michael Kramer. It was last built on Last updated: 2023-10-11.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

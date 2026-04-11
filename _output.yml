@@ -1,0 +1,25 @@
+bookdown::bs4_book:
+  theme:
+    primary: "#940128"  # "#637238" - original green,  "#940128" - burgundy, 
+  css: style.css
+  split_by: "chapter"
+  repo:
+    base: https://github.com/mkram01/EPI563-SpatialEPI
+
+bookdown::pdf_book:
+  toc: true
+  toc_depth: 3
+  number_sections: true
+  fig_width: 7
+  fig_height: 6
+  fig_caption: true
+  highlight: tango
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes
+
+
+
+

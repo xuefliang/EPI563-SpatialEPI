@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Installing packages for this course | EPI 563: Spatial Epidemiology, Fall 2023</title>
+<meta name="author" content="Michael Kramer">
+<meta name="description" content="While base R has a great deal of essential functionality, most of the power of R comes from the rapidly growing list of user-created and contributed ‘packages’. A package is simply a bundle of...">
+<meta name="generator" content="bookdown 0.35 with bs4_book()">
+<meta property="og:title" content="Installing packages for this course | EPI 563: Spatial Epidemiology, Fall 2023">
+<meta property="og:type" content="book">
+<meta property="og:description" content="While base R has a great deal of essential functionality, most of the power of R comes from the rapidly growing list of user-created and contributed ‘packages’. A package is simply a bundle of...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Installing packages for this course | EPI 563: Spatial Epidemiology, Fall 2023">
+<meta name="twitter:description" content="While base R has a great deal of essential functionality, most of the power of R comes from the rapidly growing list of user-created and contributed ‘packages’. A package is simply a bundle of...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.5.1/transition.js"></script><script src="libs/bs3compat-0.5.1/tabs.js"></script><script src="libs/bs3compat-0.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">EPI 563: Spatial Epidemiology, Fall 2023</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">How to use this eBook</a></li>
+<li><a class="" href="download-ebook.html">Download eBook</a></li>
+<li class="book-part">Getting ready…</li>
+<li><a class="" href="software-installation.html">Software installation</a></li>
+<li><a class="active" href="installing-packages-for-this-course.html">Installing packages for this course</a></li>
+<li class="book-part">Weekly Modules</li>
+<li><a class="" href="locating-spatial-epidemiology.html"><span class="header-section-number">1</span> Locating Spatial Epidemiology</a></li>
+<li><a class="" href="cartography-for-epidemiology-i.html"><span class="header-section-number">2</span> Cartography for Epidemiology I</a></li>
+<li><a class="" href="cartography-for-epidemiology-ii-spatial-ethics.html"><span class="header-section-number">3</span> Cartography for Epidemiology II: Spatial Ethics</a></li>
+<li><a class="" href="disease-mapping-i-aspatial-empirical-bayes.html"><span class="header-section-number">4</span> Disease Mapping I: Aspatial Empirical Bayes</a></li>
+<li><a class="" href="disease-mapping-ii-spatial-empirical-bayes.html"><span class="header-section-number">5</span> Disease Mapping II: Spatial Empirical Bayes</a></li>
+<li><a class="" href="disease-mapping-iii-introduction-to-fully-bayesian-mapping.html"><span class="header-section-number">6</span> Disease Mapping III: Introduction to Fully Bayesian mapping</a></li>
+<li><a class="" href="disease-mapping-iv-kernel-density-estimation.html"><span class="header-section-number">7</span> Disease Mapping IV: Kernel Density Estimation</a></li>
+<li><a class="" href="spatial-structure-and-clustering-i-morans-i-and-lisa.html"><span class="header-section-number">8</span> Spatial Structure and Clustering I: Moran’s I and LISA</a></li>
+<li><a class="" href="spatial-structure-and-clustering-ii-spatial-scan-statistics.html"><span class="header-section-number">9</span> Spatial Structure and Clustering II: Spatial scan statistics</a></li>
+<li><a class="" href="spatreg1.html"><span class="header-section-number">10</span> Spatial Regression I: Spatializing aspatial regression residuals</a></li>
+<li><a class="" href="spatial-regression-ii-spatial-econometric-regression.html"><span class="header-section-number">11</span> Spatial Regression II: Spatial econometric regression</a></li>
+<li><a class="" href="spatial-regression-iii-geographically-weighted-regression.html"><span class="header-section-number">12</span> Spatial Regression III: Geographically Weighted Regression</a></li>
+<li class="book-part">Appendices</li>
+<li><a class="" href="reproducibility-and-projects-in-r.html"><span class="header-section-number">13</span> Reproducibility and Projects in R</a></li>
+<li><a class="" href="introduction-to-rmarkdown.html"><span class="header-section-number">14</span> Introduction to rmarkdown</a></li>
+<li><a class="" href="formatting-markdown-and-notebooks.html"><span class="header-section-number">15</span> Formatting Markdown and Notebooks</a></li>
+<li><a class="" href="sf-overview.html"><span class="header-section-number">16</span> Tips for working with sf data class</a></li>
+<li><a class="" href="dplyr.html"><span class="header-section-number">17</span> Tips for using dplyr</a></li>
+<li><a class="" href="intro-tmap.html"><span class="header-section-number">18</span> Tips for using tmap</a></li>
+<li><a class="" href="kde-extract.html"><span class="header-section-number">19</span> Using kernel density estimates to quantify an exposure for Spatial Epi</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/mkram01/EPI563-SpatialEPI">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="installing-packages-for-this-course" class="section level1 unnumbered">
+<h1>Installing packages for this course<a class="anchor" aria-label="anchor" href="#installing-packages-for-this-course"><i class="fas fa-link"></i></a>
+</h1>
+<p>While base <code>R</code> has a great deal of essential functionality, most of the power of <code>R</code> comes from the rapidly growing list of user-created and contributed ‘<em>packages</em>’. A package is simply a bundle of functions and tools, sometimes also including example datasets, basic documentation, and even tutorial ‘vignettes’. You can see all the official <code>R</code> packages by going here: <a href="https://cran.r-project.org/web/packages/" class="uri">https://cran.r-project.org/web/packages/</a>.</p>
+<p>The most common way to install package in <code>R</code> is with the <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code> command. For instance to install the package <code>ggplot2</code> you do this:</p>
+<p><code>install.packages("ggplot2")</code></p>
+<p>Remember that you only need to install a package once (although you may have to update packages occasionally – see the green Update button in the Packages tab in R Studio). When you want to actually <em>use</em> a package (for example <code>ggplot2</code>) you call it like this:</p>
+<p><code><a href="https://ggplot2.tidyverse.org">library(ggplot2)</a></code></p>
+<p>If your call to <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> is working, nothing visible happens. However if you see errors, they might be because your package is out of date (and thus needs to be updated/reinstalled), or because some important <em>dependencies</em> are missing. Dependencies are other packages on which this package depends. Typically these are installed by default, but sometimes something is missing. If so, simply install the missing package and then try calling <code><a href="https://ggplot2.tidyverse.org">library(ggplot2)</a></code> again.</p>
+<div class="rmdnote">
+<p>Notice that for the function <code>install.packages('yourPackage')</code> you <strong>must use quotes</strong> around the package name. In contrast for the function <code><a href="https://rdrr.io/r/base/library.html">library(yourPackage)</a></code> you <strong>do not use quotes</strong>.</p>
+</div>
+<div class="rmdcaution">
+<p>As you submit each installation request, note the output in your R console. If you get a warning that says installation was not possible because you are missing a package <em>‘yourPackage’</em>, that suggests you are missing a dependency (e.g. something the main package needs to work correctly). Try installing the package mentioned in the error. If you have trouble, reach out to the TA’s!</p>
+</div>
+<div id="installing-packages-used-for-general-data-science" class="section level2 unnumbered">
+<h2>Installing packages used for general data science<a class="anchor" aria-label="anchor" href="#installing-packages-used-for-general-data-science"><i class="fas fa-link"></i></a>
+</h2>
+<p>For the rest of this page, copy and paste the provided code in order to install packages necessary for this course. Notice if you hover to the right of a code-chunk in the html version of the eBook, you will see a <em>copy</em> icon for quick copying and pasting.</p>
+<div class="rmdtip">
+<p>Although you are copying and pasting the code, take a moment to <strong>look</strong> at the output. Did you get any error messages that a package did not install? Sometimes you see a <strong>warning</strong> message announcing something, but perhaps the package installed ok. If there is an <strong>error</strong> message, the package probably did not install.</p>
+<p>To see if a package was installed, try loading it by typing <code><a href="https://rdrr.io/r/base/library.html">library(yourPackage)</a></code>. If nothing happens (no errors) then all is good!</p>
+</div>
+<p>These packages will support some of our general work in <code>R</code>:</p>
+<ul>
+<li>
+<code>rmarkdown</code> allows the creation of mixed output documents that combine code, documentation and results in a single, readable format.</li>
+<li>The packages <code>tinytex</code> and <code>knitr</code> are necessary for creating the <code>R</code> documents including PDF output that will be required for submitting assignments.</li>
+<li>We will use many data manipulation tools from the <code>tidyverse</code>. You can learn more about the <code>tidyverse</code> here: <a href="https://tidyverse.tidyverse.org/" class="uri">https://tidyverse.tidyverse.org/</a>, and you can see applications of <code>tidyverse</code> packages in the <a href="https://epirhandbook.com/index.html">R for Epidemiologists Handbook</a>. The <code>tidyverse</code> is actually a collection of data science tools including the visualization/plotting package <code>ggplot2</code> and the data manipulation package <code>dplyr</code>. For that reason, when you <code>install.packages('tidyverse')</code> below, you are actually installing <em>multiple</em> packages!</li>
+<li>The packages <code>here</code> and <code>pacman</code> are utilities to help simplify file pathnames and package loading behavior.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'tidyverse'</span><span class="op">)</span>   </span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'pacman'</span>, <span class="st">'here'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'tinytex'</span>, <span class="st">'rmarkdown'</span>, <span class="st">'knitr'</span><span class="op">)</span><span class="op">)</span> </span>
+<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html">install_tinytex</a></span><span class="op">(</span><span class="op">)</span>  </span>
+<span><span class="co"># this function installs the tinytex LaTex on your</span></span>
+<span><span class="co">#  computer which is necessary for rendering (creating) PDF's </span></span></code></pre></div>
+</div>
+<div id="installing-packages-use-for-geographic-data" class="section level2 unnumbered">
+<h2>Installing packages use for geographic data<a class="anchor" aria-label="anchor" href="#installing-packages-use-for-geographic-data"><i class="fas fa-link"></i></a>
+</h2>
+<p>There are many ways to get the data we want for spatial epidemiology into <code>R</code>. Because we often (but don’t always) use census geographies as aggregating units, and census populations as denominators, the following packages will be useful. They are designed to quickly extract both geographic boundary files (e.g. <em>‘shapefiles’</em>) as well as attribute data from the US Census website via an API.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'tidycensus'</span>,<span class="st">'tigris'</span><span class="op">)</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/help.html">help</a></span><span class="op">(</span><span class="st">'census_api_key'</span>,<span class="st">'tidycensus'</span><span class="op">)</span></span></code></pre></div>
+<div class="rmdtip">
+<p><strong>NOTE</strong>: To be able to interact with the Census bureau API through <code>R</code>, you will need a personalized “<strong>API key</strong>”. When you enter the second line of code above (e.g. the <code><a href="https://rdrr.io/r/utils/help.html">help()</a></code> function), you will see information on how to:</p>
+<ol style="list-style-type: decimal">
+<li>Request a key from the Census bureau</li>
+<li>Enter your cutoms key into your machine so that it is available when needed.</li>
+</ol>
+<p>We will not need the Census API key for a couple of weeks, but it is good to start now and ask for help if you have trouble!</p>
+</div>
+</div>
+<div id="installing-packages-used-for-spatial-data-manipulation-visualization" class="section level2 unnumbered">
+<h2>Installing packages used for spatial data manipulation &amp; visualization<a class="anchor" aria-label="anchor" href="#installing-packages-used-for-spatial-data-manipulation-visualization"><i class="fas fa-link"></i></a>
+</h2>
+<p>This section installs a set of tools specific to our goals of importing, exporting, manipulating, visualizing, and analyzing spatial data.</p>
+<ul>
+<li>The first line of packages have functions for defining, importing, exporting, and manipulating spatial data.</li>
+<li>The second line has some tools we will use for visualizing spatial data (e.g. making maps!).</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'sp'</span>, <span class="st">'sf'</span>, <span class="st">'raster'</span>, <span class="st">'RColorBrewer'</span>, <span class="st">'OpenStreetMap'</span><span class="op">)</span><span class="op">)</span>  </span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'tmap'</span>, <span class="st">'tmaptools'</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
+<div class="rmdcaution">
+<p><strong>BEWARE</strong></p>
+<p>There are many large shifts currently underway in <code>R</code> architecture for spatial analysis. As we will learn, for years we have been shifting away from an older data class defined in the package <code>sp</code> to a newer one called <code>sf</code>.</p>
+<p>In addition to that shift, at the end of 2023 several packages that helped link older R functions to standard GIS libraries outside of <code>R</code> <a href="https://r-spatial.org/r/2022/04/12/evolution.html">are being retired</a>. These include <code>maptools</code>, <code>rgeos</code> and <code>rgdal</code>. Newer packages do not rely on them, but some older packages have not been updated. Note that <code>sp</code>, <code>rgeos</code>, <code>rgdal</code>, and <code>maptools</code> are all included in the list above. Each year we uncover new opportunities and new bugs related to unanticipated package dependencies caused by some packages aging out. We’ll see what bumps we run into this year!</p>
+</div>
+</div>
+<div id="installing-packages-used-for-spatial-analysis" class="section level2 unnumbered">
+<h2>Installing packages used for spatial analysis<a class="anchor" aria-label="anchor" href="#installing-packages-used-for-spatial-analysis"><i class="fas fa-link"></i></a>
+</h2>
+<p>Finally these are packages specifically for spatial analysis tasks we will carry out.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'spdep'</span>, <span class="st">'CARBayes'</span>, <span class="st">'sparr'</span>, <span class="st">'spatialreg'</span>,  <span class="st">'DCluster'</span>, <span class="st">'SpatialEpi'</span>, <span class="st">'smerc'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'GWmodel'</span>, <span class="st">'spgwr'</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
+
+</div>
+</div>
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="software-installation.html">Software installation</a></div>
+<div class="next"><a href="locating-spatial-epidemiology.html"><span class="header-section-number">1</span> Locating Spatial Epidemiology</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#installing-packages-for-this-course">Installing packages for this course</a></li>
+<li><a class="nav-link" href="#installing-packages-used-for-general-data-science">Installing packages used for general data science</a></li>
+<li><a class="nav-link" href="#installing-packages-use-for-geographic-data">Installing packages use for geographic data</a></li>
+<li><a class="nav-link" href="#installing-packages-used-for-spatial-data-manipulation-visualization">Installing packages used for spatial data manipulation &amp; visualization</a></li>
+<li><a class="nav-link" href="#installing-packages-used-for-spatial-analysis">Installing packages used for spatial analysis</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/mkram01/EPI563-SpatialEPI/blob/master/00-software-setup.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/mkram01/EPI563-SpatialEPI/edit/master/00-software-setup.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>EPI 563: Spatial Epidemiology, Fall 2023</strong>" was written by Michael Kramer. It was last built on Last updated: 2023-10-11.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>
