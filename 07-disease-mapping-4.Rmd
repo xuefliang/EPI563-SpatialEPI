@@ -174,27 +174,14 @@ There are several new packages that will be required for this work:
 
 
 ```{r }
-pacman::p_load(tidyverse,  # for general data management
-               sf,         # for handling sf data class
-               tmap,       # for mapping
-               spatstat,   # A package with tools that underly the sparr package
-               sparr,      # A package for estimating spatial intensity and relative risk
-               raster)     # The outputs of these KDE functions will be raster. This package gives us tools for working with rasters
-```
-
-
-
-
-```{r include = F}
-# This is points for births in Dekalb/Fulton county
-b_point <- st_read('../SpatialEpi-2021/DATA/FultonInfantMortality/birth_points.gpkg') 
-
-# This is points for deaths in Dekalb/Fulton county
-d_point <- st_read('../SpatialEpi-2021/DATA/FultonInfantMortality/death_points.gpkg') 
-
-# This is an outline of Dekalb/Fulton county to be used as a study 'window'
-county <- st_read('../SpatialEpi-2021/DATA/FultonInfantMortality/DekalbFultonWindow.gpkg') 
-
+pacman::p_load(
+  tidyverse, # for general data management
+  sf, # for handling sf data class
+  tmap, # for mapping
+  spatstat, # A package with tools that underly the sparr package
+  sparr, # A package for estimating spatial intensity and relative risk
+  raster
+) # The outputs of these KDE functions will be raster. This package gives us tools for working with rasters
 ```
 
 
@@ -203,18 +190,6 @@ The data used in this example, and in the lab, concerns the exact $x,y$ resident
 >NOTE: These data are simulated based on approximate patterns. This is __not a representation of actual birth event data__. 
 
 The spatial point location for births and infant deaths are in two separate files. In addition a polygon file providing the outline for Dekalb and Fulton counties is provided to describe the *study window*.
-
-```{r eval = F}
-# This is points for births in Dekalb/Fulton county
-b_point <- st_read('birth_points.gpkg')
-
-# This is points for deaths in Dekalb/Fulton county
-d_point <- st_read('death_points.gpkg') 
-
-# This is an outline of Dekalb/Fulton county to be used as a study 'window'
-county <- st_read('DekalbFultonWindow.gpkg') 
-``` 
-
 
 
 ### Introducing a new spatial data class: `ppp`
@@ -256,15 +231,21 @@ Recall that estimation of a spatial point process is agnostic to whether the poi
 
 
 ```{r}
+county <- ga
+
 # Create the birth ppp object
-b_ppp <- ppp(x = st_coordinates(b_point)[, 1], 
-             y = st_coordinates(b_point)[, 2],
-             window = county_owin)
+b_ppp <- ppp(
+  x = b_coords[, 1],
+  y = b_coords[, 2],
+  window = county_owin
+)
 
 # Create the death ppp object
-d_ppp <- ppp(x = st_coordinates(d_point)[, 1], 
-             y = st_coordinates(d_point)[, 2],
-             window = county_owin)
+d_ppp <- ppp(
+  x = d_coords[, 1],
+  y = d_coords[, 2],
+  window = county_owin
+)
 ```
 
 
@@ -334,6 +315,7 @@ If you look at the help documentation for these you will see (near the bottom) a
 `LIK.density()` uses likelihood estimation of cross-validation optimal bandwidth. For the *death* dataset, `d_ppp`, it runs in just a few seconds.  However it took > 5 minutes to produce a value on the much larger *births* dataset, `b_ppp`. This code lets you try it to see what it produces: 
 
 ```{r }
+library(sparr)
 h_LIK_d <- LIK.density(d_ppp)
 print(h_LIK_d)
 ```
@@ -430,7 +412,7 @@ There is also some plotting functionality built into the `sparr` package that al
 par(mfrow = c(1, 2)) # Plots in 1 row with 2 columns
 plot(birth_kde, main = 'Birth density')
 plot(death_kde, main = 'Death density')
-par(mfrow = c(1,1))  # Reset plotting space to be 1 row, 1 column
+par(mfrow = c(1, 1)) # Reset plotting space to be 1 row, 1 column
 ```
 
 
@@ -443,26 +425,21 @@ In this code we use the argument `h0 = xxx` to specify a *pilot bandwidth*. Beca
 
 
 ```{r eval = F}
-death_kde_adapt <- bivariate.density(d_ppp, 
-                                     h0 = h_os_d, 
-                                     edge = 'diggle', 
-                                     adapt = TRUE,
-                                     verbose = FALSE)
-birth_kde_adapt <- bivariate.density(b_ppp, 
-                                     h0 = h_os_b, 
-                                     edge = 'diggle',
-                                     adapt = TRUE,
-                                     verbose = FALSE)
+death_kde_adapt <- bivariate.density(
+  d_ppp,
+  h0 = h_os_d,
+  edge = 'diggle',
+  adapt = TRUE,
+  verbose = FALSE
+)
+birth_kde_adapt <- bivariate.density(
+  b_ppp,
+  h0 = h_os_b,
+  edge = 'diggle',
+  adapt = TRUE,
+  verbose = FALSE
+)
 
-```
-
-
-```{r include = F}
-# Ran above code and manually cache in .rds
-#saveRDS(death_kde_adapt, 'myCache/death_kde_adapt.rds')
-#saveRDS(birth_kde_adapt, 'myCache/birth_kde_adapt.rds')
-death_kde_adapt <- readRDS('myCache/death_kde_adapt.rds')
-birth_kde_adapt <- readRDS('myCache/birth_kde_adapt.rds')
 ```
 
 
@@ -470,7 +447,7 @@ birth_kde_adapt <- readRDS('myCache/birth_kde_adapt.rds')
 par(mfrow = c(1, 2))
 plot(birth_kde_adapt, main = 'Birth density\n(adaptive h)')
 plot(death_kde_adapt, main = 'Death density\n(adaptive h)')
-par(mfrow = c(1,1))
+par(mfrow = c(1, 1))
 ```
 
 
@@ -518,23 +495,27 @@ Now we can plot these in `tmap`:
 
 ```{r error=F, message=F}
 # Create map of death surface
-m1 <- tm_shape(death_kde_raster) + 
-  tm_raster(palette = 'BuPu',
-            style = 'quantile',
-            n = 9,
-            title = 'Death density') +
+m1 <- tm_shape(death_kde_raster) +
+  tm_raster(
+    palette = 'BuPu',
+    style = 'quantile',
+    n = 9,
+    title = 'Death density'
+  ) +
   tm_shape(county) +
-    tm_borders() + 
+  tm_borders() +
   tm_layout(legend.format = list(scientific = T))
 
 # Create map of birth surface
 m2 <- tm_shape(birth_kde_raster) +
-  tm_raster(palette = 'BuPu',
-            style = 'quantile',
-            n = 9,
-            title = 'Birth density') +
+  tm_raster(
+    palette = 'BuPu',
+    style = 'quantile',
+    n = 9,
+    title = 'Birth density'
+  ) +
   tm_shape(county) +
-    tm_borders() + 
+  tm_borders() +
   tm_layout(legend.format = list(scientific = T))
 
 # plot 2-panel arrangment
@@ -585,12 +566,14 @@ In the `tmap` call I *flipped* the color ramp by using the negative sign in fron
 risk <- death_kde_raster / birth_kde_raster
 
 # Map it...
-tm_shape(risk) + 
-  tm_raster(palette = '-RdYlGn',
-            style = 'cont',
-            breaks = c(0.1, 0.6, 0.9,   1.1, 2, 4.9),
-            title = 'IMR SMR')  +
-tm_shape(county) +
+tm_shape(risk) +
+  tm_raster(
+    palette = '-RdYlGn',
+    style = 'cont',
+    breaks = c(0.1, 0.6, 0.9, 1.1, 2, 4.9),
+    title = 'IMR SMR'
+  ) +
+  tm_shape(county) +
   tm_borders()
 ```
 
@@ -612,55 +595,57 @@ By default, the function estimates the *log relative risk*, which is a helpful r
 **NOTE:** The *fixed bandwidth* `risk()` functions will run quickly, but once again, the *adaptive bandwidth* is more computationally intensive, and will take longer.
 
 ```{r eval = F}
-imr1000 <- risk(d_ppp, b_ppp, h0 = 1000, 
-            tolerate = T,
-            verbose = F, 
-            log = F,
-            edge = 'diggle')
+imr1000 <- risk(
+  d_ppp,
+  b_ppp,
+  h0 = 1000,
+  tolerate = T,
+  verbose = F,
+  log = F,
+  edge = 'diggle'
+)
 
-imr2000 <- risk(d_ppp, b_ppp, h0 = 2000, 
-            tolerate = T,
-            log = F,
-            edge = 'diggle',
-            verbose = F)
+imr2000 <- risk(
+  d_ppp,
+  b_ppp,
+  h0 = 2000,
+  tolerate = T,
+  log = F,
+  edge = 'diggle',
+  verbose = F
+)
 
-imr4000 <- risk(d_ppp, b_ppp, h0 = 4000, 
-            tolerate = T,
-            log = F,
-            edge = 'diggle',
-            verbose = F)
+imr4000 <- risk(
+  d_ppp,
+  b_ppp,
+  h0 = 4000,
+  tolerate = T,
+  log = F,
+  edge = 'diggle',
+  verbose = F
+)
 
-imr8000 <- risk(d_ppp, b_ppp, h0 = 8000, 
-            tolerate = T,
-            log = F,
-            edge = 'diggle',
-            verbose = F)
+imr8000 <- risk(
+  d_ppp,
+  b_ppp,
+  h0 = 8000,
+  tolerate = T,
+  log = F,
+  edge = 'diggle',
+  verbose = F
+)
 
-imradapt <- risk(d_ppp, b_ppp, 
-                 h0 = h_os_d, 
-                 adapt = T, 
-                 tolerate = T,
-                 log = F,
-                 edge = 'diggle',
-                 verbose = F)
+imradapt <- risk(
+  d_ppp,
+  b_ppp,
+  h0 = h_os_d,
+  adapt = T,
+  tolerate = T,
+  log = F,
+  edge = 'diggle',
+  verbose = F
+)
 ```
-
-```{r include = F}
-# Another manual cache
-#saveRDS(imr1000, 'myCache/imr1000.rds')
-#saveRDS(imr2000, 'myCache/imr2000.rds')
-#saveRDS(imr4000, 'myCache/imr4000.rds')
-#saveRDS(imr8000, 'myCache/imr8000.rds')
-#saveRDS(imradapt, 'myCache/imradapt.rds')
-
-imr1000 <- readRDS('myCache/imr1000.rds')
-imr2000 <- readRDS('myCache/imr2000.rds')
-imr4000 <- readRDS('myCache/imr4000.rds')
-imr8000 <- readRDS('myCache/imr8000.rds')
-imradapt <- readRDS('myCache/imradapt.rds')
-```
-
-
 
 Examine the contents of one of these objects. The summary show us the range of the estimated risk, the resolution of the evaluation grid, and the number of points evaluated.
 
@@ -681,14 +666,14 @@ You can see that the range of the estimated risk is $[-8.216873e-14, 11.05946]$.
 Once again, we can use built-in plotting functionality from `sparr` to produce maps of the *spatial relative risk surface* and the tolerance contours. (NOTE: the default legend works best for *log relative risk*, but doesn't behave well for the *relative risk* because it treats the distance from 0 to 1 as the same as the distance from 1 to 2, or 4 to 5).
 
 ```{r}
-par(mar = c(1,1,1,1)) # adjust the plotting margins
-par(mfrow = c(3,2))   # Plot 3 rows and 2 columns
+par(mar = c(1, 1, 1, 1)) # adjust the plotting margins
+par(mfrow = c(3, 2)) # Plot 3 rows and 2 columns
 plot(imr1000)
 plot(imr2000)
 plot(imr4000)
 plot(imr8000)
 plot(imradapt)
-par(mfrow = c(1,1))  # reset the plot space to 1 row, 1 col
+par(mfrow = c(1, 1)) # reset the plot space to 1 row, 1 col
 ```
 
 While the code above plots these side-by-side, you might find it easier to plot them one at a time and zoom in closer. 
@@ -719,15 +704,15 @@ Once you write a function, it need only be loaded once in a given session; after
 
 ```{r}
 ### --- prepRaster() function --- ###
-prepRaster <- function(x){
+prepRaster <- function(x) {
   rr <- raster(x$rr)
   crs(rr) <- "EPSG:5070"
 
   p_raster <- raster(x$P)
-    crs(p_raster) <- "EPSG:5070"
-  plines <- rasterToContour(p_raster, levels = c(0.025,  0.975))
-  
-  return(list(rr=rr,plines=plines))
+  crs(p_raster) <- "EPSG:5070"
+  plines <- rasterToContour(p_raster, levels = c(0.025, 0.975))
+
+  return(list(rr = rr, plines = plines))
 } ## END prepRaster() ##
 ```
 
@@ -735,19 +720,19 @@ While we're on a roll, we could also write a function for producing a `tmap` pan
 
 ```{r}
 ### --- make_map() function to create panel maps --- ###
-make_map <- function(x, bw){
+make_map <- function(x, bw) {
   mtitle <- paste('IMR - ', bw, ' smooth', sep = '')
   tm_shape(x$rr) +
-  tm_raster(palette = '-RdYlGn',
-            style = 'cont',
-            breaks = c(0.1, 0.6, 0.9,   1.1, 2, 4.9),
-            midpoint = NA,
-            title = 'IMR SMR') +
-  tm_shape(x$plines) +
-  tm_lines(col = 'level',
-           legend.col.show = F) + 
-  tm_layout(main.title = mtitle,
-            legend.format = list(digits = 1)) 
+    tm_raster(
+      palette = '-RdYlGn',
+      style = 'cont',
+      breaks = c(0.1, 0.6, 0.9, 1.1, 2, 4.9),
+      midpoint = NA,
+      title = 'IMR SMR'
+    ) +
+    tm_shape(x$plines) +
+    tm_lines(col = 'level', legend.col.show = F) +
+    tm_layout(main.title = mtitle, legend.format = list(digits = 1))
 } ## END make_map() function ##
 ```
 
@@ -758,19 +743,27 @@ The result of this work is that we can easily (and more compactly), map the four
 rr_1000 <- prepRaster(imr1000)
 rr_2000 <- prepRaster(imr2000)
 rr_4000 <- prepRaster(imr4000)
-rr_8000 <- prepRaster(imr8000)
-rr_adapt <- prepRaster(imradapt)
+# rr_8000 <- prepRaster(imr8000)
+# rr_adapt <- prepRaster(imradapt)
 
 # Then produce map panels
 m1000 <- make_map(rr_1000, '1 km')
 m2000 <- make_map(rr_2000, '2 km')
 m4000 <- make_map(rr_4000, '4 km')
-m8000 <- make_map(rr_8000, '8 km')
-mapadapt <- make_map(rr_adapt, 'adaptive')
+# m8000 <- make_map(rr_8000, '8 km')
+# mapadapt <- make_map(rr_adapt, 'adaptive')
 
-tmap_arrange(m1000, m2000, m4000, m8000,mapadapt, ncol = 2)
+tmap_arrange(m1000, m2000, m4000, m8000, mapadapt, ncol = 2)
 ```
 
+```{r}
+在调用函数前，先看看 8000 对应的栅格数据长什么样：R# 查看数据摘要
+summary(values(raster(imr8000$P)))
+
+# 或者直接看最大最小值
+range(values(raster(imr8000$P)), na.rm = TRUE)
+如果 range 不包含 $0.025$ 或 $0.975$，报错就是必然的。
+```
 
 
 ## Spatial Analysis in Epidemiology: Kernel estimation of areal data {#gwss}
@@ -805,11 +798,11 @@ This section focuses primarily on the `gwss()` function to accomplish the follow
 The new package introduced here is `GWmodel`, but several other familiar packages will also be useful:
 
 ```{r message=F, error=F}
-library(tidyverse) # For data piping and manipulationlibrary(GWmodel)   # Has the function gwss() 
-library(sf)        # For import of sf data
-library(sp)        # For conversion to sp, required for GWmodel
-library(tmap)      # For mapping
-library(GWmodel)   # Geographically weighted statistics
+library(tidyverse) # For data piping and manipulationlibrary(GWmodel)   # Has the function gwss()
+library(sf) # For import of sf data
+library(sp) # For conversion to sp, required for GWmodel
+library(tmap) # For mapping
+library(GWmodel) # Geographically weighted statistics
 ```
 
 :::{.rmdnote data-latex="{note}"}
@@ -838,16 +831,8 @@ First, we read in the `gpkg` data as an `sf` object, and then convert it to `sp`
 
 ```{r include = F}
 # This is Dekalb/Fulton census tracts
-atl <- st_read('../SpatialEpi-2021/DATA/FultonInfantMortality/Fulton-Dekalb-covariates.gpkg') %>%
-  as('Spatial') # convert to sp class (required for GWmodel)
+atl <- as(atl_sf, "Spatial") # convert to sp class (required for GWmodel)
 ```
-
-```{r eval = F}
-# This is Dekalb/Fulton census tracts
-atl <- st_read('Fulton-Dekalb-covariates.gpkg') %>%
-  as('Spatial') # convert to sp class (required for GWmodel)
-```
-
 
 #### Mapping the observed values
 
@@ -855,20 +840,20 @@ To understand the new data, consider using `summary()`, or other exploratory fun
 
 
 ```{r message = F, warning = F}
-# First map the 4 variables that are %
-tm_shape(atl) + 
-  tm_fill(c('pctNOHS', 'pctPOV', 'pctMOVE', 'pctOWNER_OCC'),
-          style = 'quantile') +
-  tm_borders()
+tm_shape(atl_sf) +
+  tm_polygons(
+    fill = c('pctNOHS', 'pctPOV', 'pctMOVE', 'pctOWNER_OCC'),
+    fill.scale = tm_scale_intervals(style = 'quantile'), # 适配 tmap v4 语法
+    fill.free = TRUE # 允许每个子图有独立的颜色标尺
+  ) +
+  tm_facets(ncol = 2) # 排版成 2 列
 ```
 
 The *Index of Concentration at the Extremes (ICE)* ranges from -1 to +1. A value of $-1$ occurs where everyone in the tract is poor; a value of $+1$ occurs in tracts where everyone is affluent; a value of $0$ suggests that either there is a balance of affluence and poverty, or alternatively that everyone is '*middle income*'. Therefore it makes sense to map it separately because it will inevitably need a *divergent* color ramp.
 
 ```{r message = F, warning = F}
-tm_shape(atl) +
-  tm_fill('ICE_INCOME_all',
-          style = 'quantile',
-          palette = 'div') +
+tm_shape(atl_sf) +
+  tm_fill('ICE_INCOME_all', style = 'quantile', palette = 'div') +
   tm_borders()
 ```
 
@@ -887,9 +872,12 @@ Recall that the decision about the *bandwidth* of the kernel density function is
 Once again, we might have theoretically important criteria for selecting a bandwidth, or we could use a statistical optimization approach. In `GWmodel` the function `bw.gwss.average()` is used for estimating the *'optimal'* bandwidth for estimating the spatially varying *mean* or *median* using cross-validation. There is no specific function for other statistics (e.g. the *SD*, *IQR*, or *correlation coefficients*). Because the spatial structure might be different for each variable, we can evaluate all variables:
 
 ```{r warning=F, message = F}
+library(GWmodel)
 # Fixed bandwidth selection
-bw.gwss.average(atl, vars = c('pctPOV', 'pctPOV', 'pctMOVE', 
-                              'pctOWNER_OCC', 'ICE_INCOME_all'))
+bw.gwss.average(
+  atl,
+  vars = c('pctPOV', 'pctPOV', 'pctMOVE', 'pctOWNER_OCC', 'ICE_INCOME_all')
+)
 ```
 
 These numbers are in the units of the map, which are meters. This suggests that the we need a pretty large fixed bandwidth (between 58 and 70 km!), at least to minimize the error as determined from the cross-validation approach. 
@@ -908,23 +896,11 @@ This is important conceptually for what *adaptation* means: in `GWmodel` the uni
 
 ```{r eval = F}
 # Adapative bandwidth selection
-bw.gwss.average(atl, vars = c('pctPOV', 'pctNOHS', 'pctMOVE', 
-                              'pctOWNER_OCC', 'ICE_INCOME_all'),
-                adaptive = T)
-```
-
-
-```{r include = F}
-#manual cache
-#bw.cache <- bw.gwss.average(atl, vars = c('pctPOV', 'pctNOHS', 'pctMOVE', 
-#                              'pctOWNER_OCC', 'ICE_INCOME_all'),
-#                adaptive = T)
-#saveRDS(bw.cache, 'myCache/bw.cache.rds')
-```
-
-```{r echo=FALSE}
-bw.cache <- readRDS('myCache/bw.cache.rds')
-bw.cache
+bw.gwss.average(
+  atl,
+  vars = c('pctPOV', 'pctNOHS', 'pctMOVE', 'pctOWNER_OCC', 'ICE_INCOME_all'),
+  adaptive = T
+)
 ```
 
 
@@ -945,19 +921,14 @@ To calculate the *geographically-weighted summary statistics* using `gwss()` we 
 If *fixed* bandwidth, the value you enter is a number in the units of the map (e.g. *meters* in our case). But if you are requesting an *adaptive* bandwidth, the value for `bw` is not in *meters*, but is actually a number or *count* of how many nearest neighbors should minimally be included in the kernel density estimation at each location. As discussed above, I will use $n=35$ as an adaptive definition of neighbors. This will result in each summary estimation including approximately 10% of the total data. Because we would like what are called *robust* statistics (e.g. the *median* and *IQR* which are robust to skewed or non-normal data), we also must specify the argument `quantile = T`.
 
 ```{r eval = F}
-atl.ss <- gwss(atl, vars = c('pctPOV', 'pctNOHS', 'pctMOVE', 'pctOWNER_OCC',
-                             'ICE_INCOME_all'),
-               adaptive = T,
-               bw = 35,
-               quantile = T)
+atl.ss <- gwss(
+  atl,
+  vars = c('pctPOV', 'pctNOHS', 'pctMOVE', 'pctOWNER_OCC', 'ICE_INCOME_all'),
+  adaptive = T,
+  bw = 35,
+  quantile = T
+)
 ```
-
-```{r include = F}
-# manual cache
-#saveRDS(atl.ss, 'myCache/atl-ss.rds')
-atl.ss <- readRDS('myCache/atl-ss.rds')
-```
-
 
 
 Perhaps unintuitively, the way to get a summary of the result is not the usual `summary()`, but instead to type `print(atl.ss)`.  When you do so you will see A LOT of results. We will focus for the moment on just the results at the very top (local mean; local SD) and at the very bottom (local median; local IQR) of the output.
@@ -985,10 +956,20 @@ First, let's map *geographically-weighted median* value for each of the statisti
 
 ```{r warning=F, message=F}
 # Map geographically-weighted Median
-tm_shape(atl.ss$SDF) + 
-  tm_fill(c('pctPOV_Median', 'pctNOHS_Median', 'pctMOVE_Median', 'pctOWNER_OCC_Median'),
-          style = 'quantile') +
-  tm_borders()
+# 将 GWR 的结果对象 SDF 转为 sf 格式再绘图
+tm_shape(st_as_sf(atl.ss$SDF)) +
+  tm_fill(
+    col = c(
+      'pctPOV_Median',
+      'pctNOHS_Median',
+      'pctMOVE_Median',
+      'pctOWNER_OCC_Median'
+    ),
+    style = 'quantile',
+    palette = "YlOrRd" # 建议加上色带，通常局部中位数用渐变色表示
+  ) +
+  tm_borders(alpha = 0.3) +
+  tm_facets(ncol = 2) # 2x2 排版查看四个变量的空间异质性
 ```
 
 
@@ -996,10 +977,14 @@ And we can also examine the local variation or diversity in values by mapping th
 
 ```{r}
 # Map geographically-weighted IQR
-tm_shape(atl.ss$SDF) + 
-  tm_fill(c('pctPOV_IQR', 'pctNOHS_IQR', 'pctMOVE_IQR', 'pctOWNER_OCC_IQR'),
-          style = 'quantile') +
-  tm_borders()
+tm_shape(st_as_sf(atl.ss$SDF)) +
+  tm_fill(
+    col = c('pctPOV_IQR', 'pctNOHS_IQR', 'pctMOVE_IQR', 'pctOWNER_OCC_IQR'),
+    style = 'quantile',
+    palette = "Blues" # IQR 通常使用单色系渐变，表示变异程度从低到高
+  ) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(ncol = 2)
 ```
 
 Remember, places with *higher IQR* have *larger local differences* in the values. Are the places of high variability similar to, or different from, the places with high median values?
@@ -1051,28 +1036,16 @@ This is what the function `gwss.montecarlo()` does. In the specific context of t
 It might sound like a lot of things are happening. Mechanically it is a relatively straightforward procedure, but it can be time consuming, particularly when you have a lot of permutations of the null.  Here we carry out the Monte Carlo permutation test for geographically-weighted statistics on a single variable, `pctPOV`. Most of the arguments are familiar, but we now must specify how many permutations or *simulations* we wish by using the arguments `nsim = `. On my computer, it took less than 1 minute to run with $n=499$ permutations. Note that because we request $n=499$ simulations, when combined with our *observed* data, there will be $n=500$ total values of the *spatially-weighted mean* value of `pctPOV` to compare.
 
 ```{r eval = F}
-p.val <- gwss.montecarlo(atl, vars = 'pctPOV', 
-                         adaptive = T,
-                         bw = 35,
-                         nsim = 499)
+p.val <- gwss.montecarlo(
+  atl,
+  vars = 'pctPOV',
+  adaptive = T,
+  bw = 35,
+  nsim = 499
+)
 
 summary(p.val)
 ```
-
-```{r include = F}
-# manual cache
-
-#saveRDS(p.val, 'myCache/p-val.rds')
-# Note the above was originally run with both pctPov and pctMove...here only showing pov
-p.val <- readRDS('myCache/p-val.rds')
-
-pov.pval <- p.val[, c(1, 3, 5, 7, 9)]
-```
-
-```{r echo=F}
-summary(pov.pval)
-```
-
 
 You can now examine the result. First you might find that what is returned is of class `matrix`. You will notice that there are columns for all 5 of the primary summary statistics estimated by `gwss`
 
@@ -1104,7 +1077,7 @@ sig95 <- p.val[, 1] < 0.025 | p.val[, 1] > 0.975
 sig90 <- p.val[, 1] < 0.05 | p.val[, 1] > 0.95
 
 # Second create a spatial object that ONLY contains significant tracts
-atl.sig95 <- atl[sig95, ] %>% 
+atl.sig95 <- atl[sig95, ] %>%
   aggregate(dissolve = T, FUN = length) # this is sp code to merge adjacent tracts
 
 atl.sig90 <- atl[sig90, ] %>%
@@ -1124,18 +1097,27 @@ Now we can use the results from above to create a map summarizing our evidence i
 
 
 ```{r}
-tm_shape(atl.ss$SDF) + 
+# 确保显著性边界也是 sf 格式（如果尚未转换）
+atl_sig90_sf <- st_as_sf(atl.sig90)
+atl_sig95_sf <- st_as_sf(atl.sig95)
+
+# 开始绘图
+tm_shape(st_as_sf(atl.ss$SDF)) +
   tm_fill('pctPOV_LM', 
-          style = 'quantile',
-          title = 'Local Average % Poverty') + 
-  tm_borders() + 
-tm_shape(atl.sig90) +
-  tm_borders(lwd = 2, col = 'blue') + 
-tm_shape(atl.sig95) + 
-  tm_borders(lwd = 2, col ='red') +
-tm_add_legend(type = 'line',
-              labels = c('p < 0.05', 'p < 0.10'),
-              col = c('red', 'blue'))
+          style = 'quantile', 
+          title = 'Local Average % Poverty') +
+  tm_borders(alpha = 0.3) +
+tm_shape(atl_sig90_sf) +
+  tm_borders(lwd = 2, col = 'blue') +
+tm_shape(atl_sig95_sf) +
+  tm_borders(lwd = 2, col = 'red') +
+tm_add_legend(
+    type = 'lines',       # v4 建议使用 'lines' (复数)
+    labels = c('p < 0.05', 'p < 0.10'),
+    col = c('red', 'blue'), # v4 内部有时会自动映射 col 到线颜色
+    title = "Significance"
+  )
+  
 ```
 
 
@@ -1161,12 +1143,26 @@ The final bits of information we will examine from the *geographically-weighted 
 Up until now, we have seen how the KDE function can produce a smoothed estimate of the local *mean*, *median*, *SD*, etc. But it can also show whether any correlation between pairs of variables is *spatially stationary* (the same everywhere), or *spatially non-stationary* (varies by location).
 
 ```{r warning=F, message=F}
-tm_shape(atl.ss$SDF) +
-  tm_fill(c('Spearman_rho_pctPOV.pctNOHS',
-            'Spearman_rho_pctPOV.pctMOVE',
-            'Spearman_rho_pctPOV.ICE_INCOME_all'),
-          style = 'quantile') +
-  tm_borders()
+# 确保使用的是 sf 对象
+atl_corr_sf <- st_as_sf(atl.ss$SDF)
+
+tm_shape(atl_corr_sf) +
+  tm_fill(
+    fill = c(
+      'Spearman_rho_pctPOV.pctNOHS',
+      'Spearman_rho_pctPOV.pctMOVE',
+      'Spearman_rho_pctPOV.ICE_INCOME_all'
+    ),
+    # v4 语法修正：使用 values 代替 palette
+    fill.scale = tm_scale_intervals(
+      style = "quantile", 
+      midpoint = 0,
+      values = "-RdBu"  # 这里从 palette 改为 values
+    ),
+    fill.free = TRUE
+  ) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(ncol = 3)
 ```
 
 
@@ -1181,18 +1177,15 @@ Previously we only conducted the *Monte Carlo permutation test* on a single vari
 
 
 ```{r eval = F}
-p.val <- gwss.montecarlo(atl, vars = c('pctPOV', 'pctMOVE'), 
-                         adaptive = T,
-                         bw = 35,
-                         nsim = 499)
+p.val <- gwss.montecarlo(
+  atl,
+  vars = c('pctPOV', 'pctMOVE'),
+  adaptive = T,
+  bw = 35,
+  nsim = 499
+)
 ```
 
-
-
-```{r include = F}
-#saveRDS(p.val, 'myCache/p-val2var.rds')
-p.val <- readRDS('myCache/p-val2var.rds')
-```
 
 You can use `summary()` or `dimnames()` to figure out which column you want. We want to get the permutation p-value for `Spearman_rho_pctPOV.pctMOVE`, which is in the 13th column of the matrix.
 
@@ -1204,29 +1197,44 @@ sig95 <- p.val[, 13] < 0.025 | p.val[, 13] > 0.975
 sig90 <- p.val[, 13] < 0.05 | p.val[, 13] > 0.95
 
 # Second create a spatial object that ONLY contains significant tracts
-atl.sig95 <- atl[sig95, ] %>% 
-  aggregate(dissolve = T, FUN = mean) 
+atl.sig95 <- atl[sig95, ] %>%
+  aggregate(dissolve = T, FUN = mean)
 
 atl.sig90 <- atl[sig90, ] %>%
   aggregate(disolve = T, FUN = mean)
+
+atl_sig90_sf <- st_as_sf(atl.sig90)
+atl_sig95_sf <- st_as_sf(atl.sig95)
 
 ```
 
 Now we can map the correlation between `pctPOV` and `pctMOVE` along with the significance test.
 
 ```{r warning = F}
-tm_shape(atl.ss$SDF) + 
-  tm_fill('Spearman_rho_pctPOV.pctMOVE', 
-          style = 'quantile',
-          title = 'Local correlation Poverty\n& Residential instability') + 
-  tm_borders() + 
-tm_shape(atl.sig90) +
-  tm_borders(lwd = 2, col = 'blue') + 
-tm_shape(atl.sig95) + 
-  tm_borders(lwd = 2, col ='red') +
-tm_add_legend(type = 'line',
-              labels = c('p < 0.05', 'p < 0.10'),
-              col = c('red', 'blue'))
+sdf_sf <- st_as_sf(atl.ss$SDF)
+
+# 3. 绘图：全部使用 sf 对象
+tm_shape(sdf_sf) +
+  tm_fill(
+    fill = 'Spearman_rho_pctPOV.pctMOVE',
+    fill.scale = tm_scale_intervals(
+      style = 'quantile',
+      midpoint = 0,      # 相关系数建议设 0 为中点
+      values = "-RdBu"   # 红色正相关，蓝色负相关
+    ),
+    fill.legend = tm_legend(title = 'Local correlation Poverty\n& Residential instability')
+  ) +
+  tm_borders(alpha = 0.2) +
+tm_shape(atl_sig90_sf) +
+  tm_borders(lwd = 2, col = 'blue') +
+tm_shape(atl_sig95_sf) +
+  tm_borders(lwd = 2, col = 'red') +
+tm_add_legend(
+    type = 'lines',      # v4 必须用复数 lines
+    labels = c('p < 0.05', 'p < 0.10'),
+    fill = c('red', 'blue'), # v4 使用 fill 定义线条颜色
+    title = "Significance"
+  )
 ```
 
 

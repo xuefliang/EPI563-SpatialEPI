@@ -119,16 +119,18 @@ The inverse gamma distribution is specified by two parameters, $\alpha$ and $\be
 
 ```{r echo = F, message=F, warning=F}
 library(ggplot2)
-ig <- as.data.frame(1/rgamma(10000, 1, 0.01))
- ggplot(ig, aes (x=`1/rgamma(10000, 1, 0.01)`)) + 
-    geom_histogram(binwidth = .01, alpha = 0.5) +
-   xlim(c(0,1.2)) + 
-   ggtitle('IG(1, 0.01)') +
-    xlab(expression(sigma^2)) +
-   theme_bw() +
-       theme(axis.title.y = element_blank(),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank())
+ig <- as.data.frame(1 / rgamma(10000, 1, 0.01))
+ggplot(ig, aes(x = `1/rgamma(10000, 1, 0.01)`)) +
+  geom_histogram(binwidth = .01, alpha = 0.5) +
+  xlim(c(0, 1.2)) +
+  ggtitle('IG(1, 0.01)') +
+  xlab(expression(sigma^2)) +
+  theme_bw() +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 ```
 
 
@@ -217,31 +219,19 @@ The example below uses the commonly implemented *Besag-York-Mollie* (BYM) model.
 In addition to the now-familiar packages, you will also need to load the `CARBayes` package. 
 
 ```{r}
-library(sf)        # sf provides st_read for importing
-library(spdep)     # spdep has functions for creating spatial neighbor objects
-library(tmap)      # tmap for plotting results
-library(dplyr)     # dplyr for pipe processing of data
-library(CARBayes)  # CARBayes has functions for fitting a range of CAR models
+library(sf) # sf provides st_read for importing
+library(spdep) # spdep has functions for creating spatial neighbor objects
+library(tmap) # tmap for plotting results
+library(dplyr) # dplyr for pipe processing of data
+library(CARBayes) # CARBayes has functions for fitting a range of CAR models
 ```
 
 
 This example will continue to use the *very low birthweight* data used in previous parts of the eBook. The following code reads it in as `sf` and calculates a *raw rate* of VLBW to use for subsequent comparisons.
 
 ```{r include = FALSE}
-vlbw <- st_read('../SpatialEpi-2021/DATA/VLBW-GA/ga-vlbw.gpkg') %>%
-  mutate(rate = VLBW / TOT )
-
 r <- sum(vlbw$VLBW) / sum(vlbw$TOT)
-vlbw$expected <- r*vlbw$TOT
-```
-
-
-```{r eval = FALSE}
-vlbw <- st_read('ga-vlbw.gpkg') %>%
-  mutate(rate = VLBW / TOT )
-
-r <- sum(vlbw$VLBW) / sum(vlbw$TOT)
-vlbw$expected <- r*vlbw$TOT
+vlbw$expected <- r * vlbw$TOT
 ```
 
 
@@ -259,7 +249,7 @@ Below I create a simple Queen contiguity neighbor object, and then convert that 
 qnb <- poly2nb(vlbw)
 qnb_mat <- nb2mat(qnb, style = 'B')
 
-dim(qnb_mat)  # confirming the dimensions of the matrix
+dim(qnb_mat) # confirming the dimensions of the matrix
 class(qnb_mat) # confirming its class
 ```
 
@@ -303,14 +293,16 @@ Now we have the three main ingredients:
 To call the BYM model we specify:
 
 ```{r cache = T}
-bym <- S.CARbym(formula = mod, 
-                        family = 'poisson', 
-                        data = vlbw, 
-                        W = qnb_mat,
-                        burnin = 30000, 
-                        n.sample = 60000, 
-                        thin = 30,
-                        verbose = FALSE)
+bym <- S.CARbym(
+  formula = mod,
+  family = 'poisson',
+  data = vlbw,
+  W = qnb_mat,
+  burnin = 30000,
+  n.sample = 60000,
+  thin = 30,
+  verbose = FALSE
+)
 ```
 
 
@@ -386,11 +378,11 @@ In the above model with 60,000 total samples (and 30,000 burn-in), the Geweke di
 The output of the `S.CARbym()` model function is complex.  If you use `summary()` or `names()` on the output object, you will see there are several components. The one called *samples* contains the posterior draws from the MCMC process. Within that object are several data matrices, each containing the posterior samples for different parameters. You can understand a little bit about them by looking at their *shape* or dimension with `dim()`. 
 
 ```{r}
-names(bym)          # what is inside the model output object?
-names(bym$samples)  # what is inside the 'samples' sub-object?
+names(bym) # what is inside the model output object?
+names(bym$samples) # what is inside the 'samples' sub-object?
 
 dim(bym$samples$beta) # 1000 draws for 1 beta fixed effect (the intercept)
-dim(bym$samples$psi)  # 1000 draws for the psi = ui + vi for each of 159 counties
+dim(bym$samples$psi) # 1000 draws for the psi = ui + vi for each of 159 counties
 ```
 
 One of the matrices inside the `bym` object is named `fitted.values`. This could be of interest if, instead of characterizing the heterogeneity in $\psi_i$ (e.g. the log-relative risk), you wish to map the model-fitted *rates*.  
@@ -456,9 +448,9 @@ library(coda)
 psi <- summary(bym$samples$psi, quantiles = c(0.5, 0.025, 0.975))$quantiles
 
 # Exponentiate the estimates to put them on RR scale
-vlbw$RR_bym <- exp(psi[,1]) # RR
-vlbw$RR_lci <- exp(psi[,2]) # Lower 95% credible interval
-vlbw$RR_uci <- exp(psi[,3]) # Upper 95% credible interval
+vlbw$RR_bym <- exp(psi[, 1]) # RR
+vlbw$RR_lci <- exp(psi[, 2]) # Lower 95% credible interval
+vlbw$RR_uci <- exp(psi[, 3]) # Upper 95% credible interval
 ```
 
 
@@ -478,12 +470,14 @@ Just as we saw with Empirical Bayes, the Bayesian smoothed rates are smoothed to
 Because we have added the modeled parameters to our `vlbw` spatial object, they are ready to map.
 
 ```{r}
-tm_shape(vlbw) + 
-  tm_fill(c('rate', 'rate_bym'),
-          style = 'quantile',
-          palette = 'BuPu',
-          title = c('Observed rate', 'CAR smoothed')) +
-  tm_borders() + 
+tm_shape(vlbw) +
+  tm_fill(
+    c('rate', 'rate_bym'),
+    style = 'quantile',
+    palette = 'BuPu',
+    title = c('Observed rate', 'CAR smoothed')
+  ) +
+  tm_borders() +
   tm_layout(legend.position = c('RIGHT', 'TOP'))
 ```
 
@@ -513,8 +507,11 @@ We can use the quantiles returned from `summary()` in the code above. We selecte
 
 ```{r}
 # Create a 1, 0 variable in vlbw indicating P<0.025 or P>0.975
-vlbw$rr_95 <- ifelse(vlbw$RR_lci > 1, 'High', 
-                     ifelse(vlbw$RR_uci < 1, 'Low', NA))
+vlbw$rr_95 <- ifelse(
+  vlbw$RR_lci > 1,
+  'High',
+  ifelse(vlbw$RR_uci < 1, 'Low', NA)
+)
 ```
 
 The new variable `vlbw_95` is a three-level indicator reflecting whether counties have significantly *lower* risk than average (e.g. their upper credible interval smaller than the null of 1), significantly *higher* risk than average (e.g. their lower credible interval is larger than the null of 1), or whether the posterior estimate for that county is consistent with the state average (e.g. there is a decent probability that the estimate of $psi_i$ is not actually different from the state expectation). 
@@ -528,20 +525,24 @@ There are several ways we could incorporate this new information into a map, but
 
 ```{r}
 tm_shape(vlbw) +
-  tm_fill('RR_bym',
-          style = 'fixed',
-          palette = 'PRGn',
-          breaks = c(0.13, 0.67, 0.9, 1.1, 1.4, 2.3),
-          title = 'Relative Risk') +
-  tm_borders() + 
-tm_shape(subset(vlbw, rr_95 == 'Low')) + 
+  tm_fill(
+    'RR_bym',
+    style = 'fixed',
+    palette = 'PRGn',
+    breaks = c(0.13, 0.67, 0.9, 1.1, 1.4, 2.3),
+    title = 'Relative Risk'
+  ) +
+  tm_borders() +
+  tm_shape(subset(vlbw, rr_95 == 'Low')) +
   tm_borders(col = 'purple', lwd = 2) +
-tm_shape(subset(vlbw, rr_95 == 'High')) + 
+  tm_shape(subset(vlbw, rr_95 == 'High')) +
   tm_borders(col = 'green', lwd = 2) +
-  tm_add_legend(type = 'line', 
-                labels = c('Low risk county', 'High risk county'), 
-                col = c('purple','green')) +
-  tm_layout(legend.position = c('RIGHT','TOP'))
+  tm_add_legend(
+    type = 'line',
+    labels = c('Low risk county', 'High risk county'),
+    col = c('purple', 'green')
+  ) +
+  tm_layout(legend.position = c('RIGHT', 'TOP'))
 ```
 
 
@@ -549,20 +550,24 @@ Here is an alternative approach using `tm_symbols()` to plot colored symbols on 
 
 ```{r}
 tm_shape(vlbw) +
-  tm_fill('RR_bym',
-          style = 'fixed',
-          palette = 'PRGn',
-          breaks = c(0.13, 0.67, 0.9, 1.1, 1.4, 2.3),
-          title = 'Relative Risk') +
-  tm_borders() + 
-tm_shape(vlbw) + 
-  tm_symbols(shape = 'rr_95',
-             col = 'rr_95',
-             palette = 'Dark2',
-             size = .5,
-             shapeNA = NA,
-             showNA = FALSE,
-             legend.shape.show = FALSE,
-            title.col = 'Significance') +
+  tm_fill(
+    'RR_bym',
+    style = 'fixed',
+    palette = 'PRGn',
+    breaks = c(0.13, 0.67, 0.9, 1.1, 1.4, 2.3),
+    title = 'Relative Risk'
+  ) +
+  tm_borders() +
+  tm_shape(vlbw) +
+  tm_symbols(
+    shape = 'rr_95',
+    col = 'rr_95',
+    palette = 'Dark2',
+    size = .5,
+    shapeNA = NA,
+    showNA = FALSE,
+    legend.shape.show = FALSE,
+    title.col = 'Significance'
+  ) +
   tm_layout(legend.outside = TRUE)
 ```
