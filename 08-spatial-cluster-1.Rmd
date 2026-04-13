@@ -116,36 +116,27 @@ In this section we will introduce the Global and Local Moran's I statistics for 
 In addition to the familiar packages, we will use packages with specific cluster statistics including `DCluster` and `spdep` have functions relevant for spatial cluster analysis.
 
 ```{r message = F, warning=F}
-pacman::p_load(tidyverse, # Provides data manipulation and piping functionality
-               sf,        # Read/write spatial data
-               spdep,     # Functions for creating spatial weight, spatial analysis
-               DCluster,  # Package with functions for spatial cluster analysis
-               tmap)      # Mapping functionality
+pacman::p_load(
+  tidyverse, # Provides data manipulation and piping functionality
+  sf, # Read/write spatial data
+  spdep, # Functions for creating spatial weight, spatial analysis
+  DCluster, # Package with functions for spatial cluster analysis
+  tmap
+) # Mapping functionality
 ```
 
 
 In terms of data, we will continue to use the Georgia *very low birth weight (VLBW)* data, with counts aggregated to the scale of county.
 
 ```{r include = FALSE}
-vlbw <- st_read('../SpatialEpi-2021/DATA/VLBW-GA/ga-vlbw.gpkg') %>%
-  mutate(rate = VLBW / TOT )
+load('data/vlbw.RData')
 
 r <- sum(vlbw$VLBW) / sum(vlbw$TOT)
-vlbw$expected <- r*vlbw$TOT
-```
-
-
-```{r eval = FALSE}
-vlbw <- st_read('ga-vlbw.gpkg') %>%
-  mutate(rate = VLBW / TOT )
-
-r <- sum(vlbw$VLBW) / sum(vlbw$TOT)
-vlbw$expected <- r*vlbw$TOT
+vlbw$expected <- r * vlbw$TOT
 ```
 
 
 ### Global Moran's I
-
 
 
 There are numerous tests of global spatial auto-correlation including Geary's $C$ test, the Getis-Ord $G^*$ statistic and others. We will focus on the most commonly used, the *Moran's I* statistic. As discussed in the lectures, the Moran's I statistic is similar to a Pearson's correlation coefficient, in that it takes the product of differences of two measures from their respective mean to quantify dependence or similarity. In the case of Pearson's correlation coefficient, the two measures (e.g. $x,y$) are of two constructs (e.g. one variable, $x$ and a second variable, $y$). However in the case of Moran's I, the two measures are of the *same construct* but contrast the *index* county (e.g. $x_i$), as compared to the average value of that county's *neighbors* (e.g. $w_{ij}x_j$ where $w_{ij}=1$ for regions that are neighbors, and $w_{ij}=0$ otherwise.  Thus, the spatial weights matrix $w_{ij}$ encodes the spatial relationships between places. 
@@ -186,22 +177,28 @@ The following function, `moran.test()`, is from the package `spdep`, and takes a
 The function allows consideration of either a theoretical null spatial model (e.g. assumes the variance of $I$ statistic is consistent with an asymptotic *normal distribution* specified by the options `randomization = FALSE`), or for the null spatial model to be computational (e.g. assume variance of the $I$ statistic is not normal, and will be empirically approximated through random permutations). Below we specify the computational null by indicating `randomisation = TRUE`. You can read more about the arguments and information returned by this function by looking at the document help. 
 
 ```{r}
-moran.test(vlbw$rate, 
-                 listw = q_listw, 
-                 randomisation = T)
+moran.test(vlbw$rate, listw = q_listw, randomisation = T)
 ```
 
 The Moran's I statistic of $0.21$, with a very small p-value suggests that there is evidence of *moderate spatial autocorrelation*, and that this result is highly statistically significant. 
+
+当样本量小的时候，moran.test 不准，moran.mc 比较准.moran.test(randomisation=T) → 近似
+
+```{r}
+moran.mc(vlbw$rate, listw = q_listw, nsim = 999)
+```
 
 To visualize how the mortality rate for each county compares to each county's neighbors we can use `moran.plot()`.
 
 
 ``` {r}
-moran.plot(x = vlbw$rate, 
-           listw = q_listw, 
-           labels = vlbw$NAME, 
-           xlab = 'VLBW Risk', 
-           ylab = 'Spatially-lagged mean risk')
+moran.plot(
+  x = vlbw$rate,
+  listw = q_listw,
+  labels = vlbw$NAME,
+  xlab = 'VLBW Risk',
+  ylab = 'Spatially-lagged mean risk'
+)
 ```
 
 This plot demonstrates the correlation or relationship between each county's VLBW risk (x-axis) against the average of the risk for that county's spatial neighbors (y-axis; assuming Queen contiguity).  The dotted lines divide the plot into quadrants representing above and below the mean value of both the rate, and the spatially-lagged rates of neighbors. The solid line is the slope of correlation (it corresponds to the 0.21).  
@@ -228,13 +225,15 @@ Note, the addition of arguments `n=159` and `S0 = Szero(q_listw)` are now requir
 Also note that instead of using the calculated *rate*, we specify the county of the outcome and the `log(expected)` as an offset. We can also specify the number of random simulations of the *null hypothesis* to run in order to calculate the empirically p-value.
 
 ```{r}
-moranI.test(VLBW ~ offset(log(expected)), 
-                  data = vlbw,
-                  model = 'poisson',
-                  R = 499,
-                  listw = q_listw,
-                  n = 159,
-                  S0 = Szero(q_listw))
+moranI.test(
+  VLBW ~ offset(log(expected)),
+  data = vlbw,
+  model = 'poisson',
+  R = 499,
+  listw = q_listw,
+  n = 159,
+  S0 = Szero(q_listw)
+)
 ```
 
 Not surprisingly, the Moran's I statistic itself is virtually identical to what we got in the previous example ($I=0.21$). While the empirical p-value of $p=0.002$ is still significant at $\alpha = 0.05$, it is substantially larger than the p-value calculated by the Moran's I test run under the assumption of normality. This reflects the variation in precision among counties, that is now at least partially being accounted for.
@@ -244,11 +243,10 @@ Not surprisingly, the Moran's I statistic itself is virtually identical to what 
 
 Given the concern for a relatively rare outcome, and few births in some counties, we might also be concerned about whether the rates are being well-estimated.  While the `moranI.test()` function above helped address the unequal variance resulting from sparse as compared with populous counties, it did not directly address the *reliability* of the estimate.  However it is possible to combine the disease mapping tool *Empirical Bayes smoothing* with the Moran's I statistic to get a more reliable estimate of global spatial auto-correlation. The `EBImoran.mc()` function from the `spdep` package does this for us. 
 
+小人口地区 + 罕见病 = 经验贝叶斯平滑
+
 ```{r message = F, warning=F}
-ebm <- EBImoran.mc(n = vlbw$VLBW,
-                   x = vlbw$TOT,
-                   listw = q_listw,
-                   nsim = 499)
+ebm <- EBImoran.mc(n = vlbw$VLBW, x = vlbw$TOT, listw = q_listw, nsim = 499)
 print(ebm)
 ```
 
@@ -279,13 +277,13 @@ The first approach is to use the basic `localmoran()` function in `spdep`.  This
 A previous version of `spdep` had a built-in option to calculate multiple comparison corrections of the local moran's I. In the current version, that function was removed from `localmoran()`, but you can still do it by looking at the help documentation for the function `?p.adjustSP`.
 
 ```{r}
-lm1 <- localmoran(x = vlbw$rate,
-                  listw = q_listw) 
+lm1 <- localmoran(x = vlbw$rate, listw = q_listw)
 
 
-dim(lm1)      # dimensions of object returned
-summary(lm1)  # summary of object returned
+dim(lm1) # dimensions of object returned
+summary(lm1) # summary of object returned
 ```
+
 The contents returned by the `localmoran()` function is a `matrix` with five columns with separate values for each of $n=159$ rows (representing counties in our data). 
 
 * __`Ii`__ is the local Moran's I test statistic.  
@@ -336,20 +334,32 @@ names(lm1)[5] <- 'pvalue'
 
 # create lagged local raw_rate - in other words the average of the queen neighbors value
 vlbw$lag <- lag.listw(q_listw, var = vlbw$rate)
-vlbw$lm_pv <- lm1[,5]
+vlbw$lm_pv <- lm1[, 5]
 
 # Create a new dataset that includes standardized values, and then creates a new variable
 # 'lm_quad' which takes on the above categorical values.
 vlbw_lm <- vlbw %>%
-  mutate(raw_std = as.numeric(scale(rate)), # scale means standardize to mean 0, 1 SD
-         lag_std = as.numeric(scale(lag)),
-         lm_quad = factor(case_when(  # All of this is assigning labels based on values
-           raw_std >= 0 & lag_std >= 0 & lm_pv < 0.05 ~ 'High-High',
-            raw_std <= 0 & lag_std <= 0 & lm_pv < 0.05 ~ 'Low-Low',
-            raw_std <= 0 & lag_std >= 0 & lm_pv < 0.05 ~ 'Low-High',
-            raw_std >= 0 & lag_std <= 0 & lm_pv < 0.05 ~ 'High-Low',
-            lm_pv >= 0.05 ~ 'Non-significant'),
-           levels = c('High-High','Low-Low','Low-High','High-Low','Non-significant')))
+  mutate(
+    raw_std = as.numeric(scale(rate)), # scale means standardize to mean 0, 1 SD
+    lag_std = as.numeric(scale(lag)),
+    lm_quad = factor(
+      case_when(
+        # All of this is assigning labels based on values
+        raw_std >= 0 & lag_std >= 0 & lm_pv < 0.05 ~ 'High-High',
+        raw_std <= 0 & lag_std <= 0 & lm_pv < 0.05 ~ 'Low-Low',
+        raw_std <= 0 & lag_std >= 0 & lm_pv < 0.05 ~ 'Low-High',
+        raw_std >= 0 & lag_std <= 0 & lm_pv < 0.05 ~ 'High-Low',
+        lm_pv >= 0.05 ~ 'Non-significant'
+      ),
+      levels = c(
+        'High-High',
+        'Low-Low',
+        'Low-High',
+        'High-Low',
+        'Non-significant'
+      )
+    )
+  )
 ```
 
 To summarize, the code above accomplished the following steps:
@@ -377,12 +387,15 @@ Having created this re-coded variable, we can now plot the results. The palette 
 
 ```{r}
 tm_shape(vlbw_lm) +
-  tm_fill('lm_quad',
-          style = 'cat',
-          palette = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#ffffb3"),
-          title = 'Cluster category') +
+  tm_fill(
+    'lm_quad',
+    style = 'cat',
+    palette = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#ffffb3"),
+    title = 'Cluster category'
+  ) +
   tm_borders()
 ```
+
 There are apparent '*High-High*' clusters, a single county that is '*Low-Low*', and no counties categorized as spatial outliers (e.g. '*High-Low*' or '*Low-High*').  
 
 :::{.rmdnote data-latex="{note}"}
@@ -396,22 +409,32 @@ Remember a cluster is defined by the intersection of whether the region itself i
 :::
 
 
-#### Local Moran's I - `localmoran.exact()`
+#### Local Moran's I - `
+localmoran.exact()
+`
+每个县的样本量都很小，普通检验不准，所以用 “精确检验”
+必须输入一个 线性回归模型（lm），可以用人口加权，让大县更稳，用邻接关系（nb） 而不是权重矩阵
 
 Another approach to the local spatial auto-correlation question, is to use exact tests to account for the small-n problem of each test. 
 
-For this approach, you must supply a *regression model object* because the test is done on the model-fitted values. The help documentation specifies this must be an `lm()` object (e.g. linear model), and that no offsets are allowed. 
+For this approach, you must supply a *regression model object* because the test is done on the model-fitted values. The help documentation specifies this must be an `
+lm()
+` object (e.g. linear model), and that no offsets are allowed. 
 
-One way to get the linear regression to account for the difference in population-at-risk is to weight each observation (e.g. each region) such that their weight is the proportion of the total state population of births at risk. Also note, that `localmoran.exact()` uses the *spatial neighbors* objects, `qnb`, rather than the previously used *spatial neighbors weights list*, `q_listw`.
+One way to get the linear regression to account for the difference in population-at-risk is to weight each observation (e.g. each region) such that their weight is the proportion of the total state population of births at risk. Also note, that `
+localmoran.exact()
+` uses the *spatial neighbors* objects, `
+qnb
+`, rather than the previously used *spatial neighbors weights list*, `
+q_listw
+`.
 
 ```{r}
 # Create a vector of weights that reflect the relative population (births) size in each county
 wts <- vlbw$TOT / sum(vlbw$TOT) * 159
 
 # Fit a weighted linear regression model of the raw (observed) rates
-reg1 <- lm(rate ~ 1, 
-           data = vlbw,
-           weights = wts)
+reg1 <- lm(rate ~ 1, data = vlbw, weights = wts)
 
 # Carry out the Exact Moran's I test on the model object
 lm2 <- localmoran.exact(reg1, nb = qnb)
@@ -425,11 +448,308 @@ The `localmoran.exact()` function returns a more complex object than the `localm
 lm2 <- print(lm2)
 
 # Assign the exact p-value to the vlbw data object
-vlbw_lm$pvalExact <- lm2[,3]
+vlbw_lm$pvalExact <- lm2[, 3]
 ```
 
 Now the object is ready for plotting using the strategy above of categorizing counties into the LISA typology, and then mapping. Here we introduce one last strategy, and then plot the three versions side by side below.
 
+```{r}
+#' Local Moran's I Exact Test
+#'
+#' Perform exact local Moran's I test using weighted linear regression approach.
+#' This function uses spatial neighbors objects and population-weighted regression
+#' to conduct exact local spatial autocorrelation tests.
+#'
+#' @param observed Vector of observed event counts or rates
+#' @param population Vector of population at risk (e.g., total births)
+#' @param nb Spatial neighbors object (from spdep)
+#' @param formula Formula for regression model (default: "observed ~ 1" for intercept-only)
+#' @param weight_type Type of weighting scheme: "population" (default) or "equal"
+#' @param return_model Logical, whether to return the fitted model object (default: FALSE)
+#' @param alpha Significance level for determining significance (default: 0.05)
+#'
+#' @return A list containing:
+#'   \item{I_exact}{Local Moran's I statistics}
+#'   \item{E_I}{Expected values of local Moran's I}
+#'   \item{pval_exact}{Exact p-values}
+#'   \item{significant}{Logical vector indicating significance}
+#'   \item{weights}{Weights used in regression}
+#'   \item{fitted_model}{Fitted regression model (if requested)}
+#'   \item{summary}{Summary statistics}
+#'
+#' @examples
+#' # Basic usage with rate data
+#' result <- local_moran_exact(
+#'   observed = vlbw$rate,
+#'   population = vlbw$TOT,
+#'   nb = qnb
+#' )
+#'
+#' # Usage with count data
+#' result <- local_moran_exact(
+#'   observed = vlbw$VLBW,
+#'   population = vlbw$TOT,
+#'   nb = qnb
+#' )
+#'
+#' # Access results
+#' print(result$I_exact)
+#' print(result$pval_exact)
+#' print(sum(result$significant))
+
+local_moran_exact <- function(
+  observed,
+  population,
+  nb,
+  formula = NULL,
+  weight_type = "population",
+  return_model = FALSE,
+  alpha = 0.05
+) {
+  # Input validation
+  if (length(observed) != length(population)) {
+    stop("observed and population vectors must have the same length")
+  }
+
+  if (any(population <= 0)) {
+    stop("population values must be positive")
+  }
+
+  if (any(is.na(observed)) || any(is.na(population))) {
+    stop("observed and population vectors cannot contain NA values")
+  }
+
+  if (!inherits(nb, "nb")) {
+    stop("nb must be a spatial neighbors object from spdep")
+  }
+
+  # Check if spdep package is available
+  if (!requireNamespace("spdep", quietly = TRUE)) {
+    stop("spdep package is required for this function")
+  }
+
+  N <- length(observed)
+
+  # Create weights based on relative population size
+  if (weight_type == "population") {
+    weights <- population / sum(population) * N
+  } else if (weight_type == "equal") {
+    weights <- rep(1, N)
+  } else {
+    stop("weight_type must be either 'population' or 'equal'")
+  }
+
+  # Create data frame for regression
+  reg_data <- data.frame(
+    observed = observed,
+    population = population,
+    weights = weights
+  )
+
+  # Set up formula
+  if (is.null(formula)) {
+    formula <- observed ~ 1 # Intercept-only model
+  } else {
+    formula <- as.formula(formula)
+  }
+
+  # Fit weighted linear regression model
+  cat("Fitting weighted linear regression model...\n")
+  fitted_model <- lm(formula, data = reg_data, weights = weights)
+
+  # Perform exact local Moran's I test
+  cat("Performing exact local Moran's I test...\n")
+
+  tryCatch(
+    {
+      exact_result <- spdep::localmoran.exact(fitted_model, nb = nb)
+    },
+    error = function(e) {
+      stop("Error in localmoran.exact(): ", e$message)
+    }
+  )
+
+  # Convert to matrix format for easier extraction
+  exact_matrix <- print(exact_result)
+
+  # Extract results
+  I_exact <- exact_matrix[, 1] # Local Moran's I statistics
+  E_I <- exact_matrix[, 2] # Expected values
+  pval_exact <- exact_matrix[, 3] # Exact p-values
+
+  # Determine significance
+  significant <- pval_exact < alpha
+
+  # Create summary statistics
+  summary_stats <- data.frame(
+    min_I = min(I_exact, na.rm = TRUE),
+    max_I = max(I_exact, na.rm = TRUE),
+    mean_I = mean(I_exact, na.rm = TRUE),
+    sd_I = sd(I_exact, na.rm = TRUE),
+    min_pval = min(pval_exact, na.rm = TRUE),
+    max_pval = max(pval_exact, na.rm = TRUE),
+    n_significant = sum(significant, na.rm = TRUE),
+    prop_significant = mean(significant, na.rm = TRUE)
+  )
+
+  # Prepare results list
+  results <- list(
+    I_exact = I_exact,
+    E_I = E_I,
+    pval_exact = pval_exact,
+    significant = significant,
+    weights = weights,
+    alpha = alpha,
+    weight_type = weight_type,
+    formula = formula,
+    n_regions = N,
+    n_significant = sum(significant, na.rm = TRUE),
+    summary = summary_stats,
+    exact_result_matrix = exact_matrix
+  )
+
+  # Optionally include fitted model
+  if (return_model) {
+    results$fitted_model <- fitted_model
+  }
+
+  cat("Exact local Moran's I test complete.\n")
+  cat(
+    "Number of significant regions:",
+    sum(significant, na.rm = TRUE),
+    "out of",
+    N,
+    "\n"
+  )
+  cat(
+    "Proportion significant:",
+    round(mean(significant, na.rm = TRUE), 4),
+    "\n"
+  )
+
+  class(results) <- "local_moran_exact"
+  return(results)
+}
+
+# 添加打印方法
+print.local_moran_exact <- function(x, ...) {
+  cat("Local Moran's I Exact Test\n")
+  cat("==========================\n")
+  cat("Number of regions:", x$n_regions, "\n")
+  cat("Weight type:", x$weight_type, "\n")
+  cat("Formula:", deparse(x$formula), "\n")
+  cat("Significance level:", x$alpha, "\n")
+  cat("Number of significant regions:", x$n_significant, "\n")
+  cat(
+    "Proportion significant:",
+    round(x$n_significant / x$n_regions, 4),
+    "\n\n"
+  )
+
+  cat("Summary Statistics:\n")
+  print(x$summary)
+}
+
+# 添加汇总方法
+summary.local_moran_exact <- function(object, ...) {
+  cat("Local Moran's I Exact Test - Summary\n")
+  cat("====================================\n")
+  cat("Regions analyzed:", object$n_regions, "\n")
+  cat("Weight type:", object$weight_type, "\n")
+  cat("Formula:", deparse(object$formula), "\n")
+  cat("Alpha level:", object$alpha, "\n\n")
+
+  cat("Local Moran's I Statistics:\n")
+  cat("Min:", round(min(object$I_exact, na.rm = TRUE), 4), "\n")
+  cat("1st Qu.:", round(quantile(object$I_exact, 0.25, na.rm = TRUE), 4), "\n")
+  cat("Median:", round(median(object$I_exact, na.rm = TRUE), 4), "\n")
+  cat("Mean:", round(mean(object$I_exact, na.rm = TRUE), 4), "\n")
+  cat("3rd Qu.:", round(quantile(object$I_exact, 0.75, na.rm = TRUE), 4), "\n")
+  cat("Max:", round(max(object$I_exact, na.rm = TRUE), 4), "\n\n")
+
+  cat("Expected Values:\n")
+  cat("Min:", round(min(object$E_I, na.rm = TRUE), 4), "\n")
+  cat("Median:", round(median(object$E_I, na.rm = TRUE), 4), "\n")
+  cat("Mean:", round(mean(object$E_I, na.rm = TRUE), 4), "\n")
+  cat("Max:", round(max(object$E_I, na.rm = TRUE), 4), "\n\n")
+
+  cat("P-values:\n")
+  cat("Min:", round(min(object$pval_exact, na.rm = TRUE), 4), "\n")
+  cat(
+    "1st Qu.:",
+    round(quantile(object$pval_exact, 0.25, na.rm = TRUE), 4),
+    "\n"
+  )
+  cat("Median:", round(median(object$pval_exact, na.rm = TRUE), 4), "\n")
+  cat("Mean:", round(mean(object$pval_exact, na.rm = TRUE), 4), "\n")
+  cat(
+    "3rd Qu.:",
+    round(quantile(object$pval_exact, 0.75, na.rm = TRUE), 4),
+    "\n"
+  )
+  cat("Max:", round(max(object$pval_exact, na.rm = TRUE), 4), "\n\n")
+
+  cat("Significance:\n")
+  cat(
+    "Significant regions:",
+    object$n_significant,
+    "out of",
+    object$n_regions,
+    "\n"
+  )
+  cat(
+    "Proportion significant:",
+    round(object$n_significant / object$n_regions, 4),
+    "\n"
+  )
+
+  if (object$n_significant > 0) {
+    sig_indices <- which(object$significant)
+    cat(
+      "Significant region indices:",
+      paste(sig_indices, collapse = ", "),
+      "\n"
+    )
+  }
+}
+
+# 添加提取方法，用于获取特定组件
+extract_results <- function(x, component = "all") {
+  if (!inherits(x, "local_moran_exact")) {
+    stop("x must be a local_moran_exact object")
+  }
+
+  switch(
+    component,
+    "I" = x$I_exact,
+    "pval" = x$pval_exact,
+    "significant" = x$significant,
+    "weights" = x$weights,
+    "matrix" = x$exact_result_matrix,
+    "all" = x,
+    stop(
+      "component must be one of: 'I', 'pval', 'significant', 'weights', 'matrix', 'all'"
+    )
+  )
+}
+```
+
+
+```{r}
+result_exact <- local_moran_exact(
+  observed = vlbw$rate,
+  population = vlbw$TOT,
+  nb = qnb
+)
+# 查看结果
+print(result_exact)
+summary(result_exact)
+
+# 将结果添加到数据框
+vlbw_lm$I_exact <- result_exact$I_exact
+vlbw_lm$pval_exact <- result_exact$pval_exact
+vlbw_lm$significant_exact <- result_exact$significant
+```
 
 #### Local Moran's I with constant risk assumption
 
@@ -478,7 +798,7 @@ This step is not for testing the significance of the local dependence, but inste
 
 ```{r}
 # Step 5 - Start a for-loop to iterate over simulation columns
-for(i in 1:nsim){
+for (i in 1:nsim) {
   y <- rpois(N, lambda = vlbw$expected) # generate a random event count, given expected
   sdCRi <- (y - vlbw$expected) / sqrt(vlbw$expected) # standardized local measure
   wsdCRi <- lag.listw(q_listw, sdCRi) # standardized spatially lagged measure
@@ -505,37 +825,61 @@ Now we combine all of the p-values from these different strategies into a single
 
 ```{r}
 vlbw_lm2 <- vlbw_lm %>%
-  mutate(lm_quad_exact = factor(case_when(
-    # First, recode the LISA quadrant values using exact test
-           raw_std >= 0 & lag_std >= 0 & pvalExact < 0.05 ~ 'High-High',
-            raw_std <= 0 & lag_std <= 0 & pvalExact < 0.05 ~ 'Low-Low',
-            raw_std <= 0 & lag_std >= 0 & pvalExact < 0.05 ~ 'Low-High',
-            raw_std >= 0 & lag_std <= 0 & pvalExact < 0.05 ~ 'High-Low',
-            pvalExact >= 0.05 ~ 'Non-significant'),
-           levels = c('High-High','Low-Low','Low-High','High-Low','Non-significant')),
+  mutate(
+    lm_quad_exact = factor(
+      case_when(
+        # First, recode the LISA quadrant values using exact test
+        raw_std >= 0 & lag_std >= 0 & pvalExact < 0.05 ~ 'High-High',
+        raw_std <= 0 & lag_std <= 0 & pvalExact < 0.05 ~ 'Low-Low',
+        raw_std <= 0 & lag_std >= 0 & pvalExact < 0.05 ~ 'Low-High',
+        raw_std >= 0 & lag_std <= 0 & pvalExact < 0.05 ~ 'High-Low',
+        pvalExact >= 0.05 ~ 'Non-significant'
+      ),
+      levels = c(
+        'High-High',
+        'Low-Low',
+        'Low-High',
+        'High-Low',
+        'Non-significant'
+      )
+    ),
     # Now recode the LISA quadrant values using the constant-risk simulation
-          lm_quad_CR = factor(case_when(
-           raw_std >= 0 & lag_std >= 0 & pvalCR < 0.05 ~ 'High-High',
-            raw_std <= 0 & lag_std <= 0 & pvalCR < 0.05 ~ 'Low-Low',
-            raw_std <= 0 & lag_std >= 0 & pvalCR < 0.05 ~ 'Low-High',
-            raw_std >= 0 & lag_std <= 0 & pvalCR < 0.05 ~ 'High-Low',
-            pvalCR >= 0.05 ~ 'Non-significant'),
-           levels = c('High-High','Low-Low','Low-High','High-Low','Non-significant')))
+    lm_quad_CR = factor(
+      case_when(
+        raw_std >= 0 & lag_std >= 0 & pvalCR < 0.05 ~ 'High-High',
+        raw_std <= 0 & lag_std <= 0 & pvalCR < 0.05 ~ 'Low-Low',
+        raw_std <= 0 & lag_std >= 0 & pvalCR < 0.05 ~ 'Low-High',
+        raw_std >= 0 & lag_std <= 0 & pvalCR < 0.05 ~ 'High-Low',
+        pvalCR >= 0.05 ~ 'Non-significant'
+      ),
+      levels = c(
+        'High-High',
+        'Low-Low',
+        'Low-High',
+        'High-Low',
+        'Non-significant'
+      )
+    )
+  )
 ```
 
 
 And this plot compares the three versions:
 
 ```{r}
-tm_shape(vlbw_lm2) + 
-  tm_fill(c('lm_quad', 'lm_quad_exact', 'lm_quad_CR'),
-          style = 'cat',
-          palette = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#ffffb3"),
-          title = c('Standard LISA', 'Exact LISA', 'Constant Risk')) +
+tm_shape(vlbw_lm2) +
+  tm_fill(
+    c('lm_quad', 'lm_quad_exact', 'lm_quad_CR'),
+    style = 'cat',
+    palette = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#ffffb3"),
+    title = c('Standard LISA', 'Exact LISA', 'Constant Risk')
+  ) +
   tm_borders() +
-  tm_layout(legend.position = c('RIGHT','TOP'),
-            inner.margins = c(0.02,.02,0.1, 0.1))
-            
+  tm_layout(
+    legend.position = c('RIGHT', 'TOP'),
+    inner.margins = c(0.02, .02, 0.1, 0.1)
+  )
+
 ```
 
 As you can see there is some overlap among the methods, and also notable variations, with the most noticeable difference with the final simulated version under constant Poisson risk.  While the *standard* and *exact* approach will remain the same each time you run the analysis, because of the random simulation, the *constant risk* approach could change with each instance, and in particular, there could be changes if you increase the `nsim` parameter to have more simulations of the null hypothesis. 
@@ -548,4 +892,249 @@ There is also evidence (especially in the exact and constant risk maps) of clust
 2. LISA statistics (and all cluster strategies) rely heavily on null-hypothesis significance testing. We know as epidemiologists that too much weight can be put on the arbitrary achievement of a test statistic moving across a largely meaningless threshold value.  If you align the maps above with past maps in Disease Mapping modules, the counties highlighted as high and low are not surprising. The differences among these strategies relies on statistical efficiency, power to detect '*true*' deviations, and alignment of the real world with statistical assumptions.  Therefore, use these results as tools for understanding but be cautious about using them as strong decision tools.
 
 
+标准 LISA（localmoran）：普通，直接用原始率，小样本不准
+精确局部莫兰（localmoran.exact）：，解决每个县样本量小的问题，更稳
+固定风险 Poisson 局部莫兰（Constant Risk）： 最适合罕见病 + 小人口县，用期望数模拟，排除随机波动
 
+
+
+```{r}
+#' Local Moran's I with Constant Risk Assumption
+#'
+#' Calculate local Moran's I statistics under the constant risk hypothesis
+#' for Poisson-distributed case event counts over population at risk.
+#'
+#' @param observed Vector of observed event counts
+#' @param expected Vector of expected event counts under constant risk
+#' @param listw Spatial weights list object (from spdep)
+#' @param nsim Number of simulations for null hypothesis testing (default: 499)
+#' @param seed Random seed for reproducibility (default: 123)
+#' @param alpha Significance level for p-value calculation (default: 0.05)
+#' @param return_simulations Logical, whether to return simulation matrix (default: FALSE)
+#'
+#' @return A list containing:
+#'   \item{I_CR}{Local Moran's I statistics under constant risk}
+#'   \item{pval_CR}{P-values from simulation}
+#'   \item{significant}{Logical vector indicating significance at alpha level}
+#'   \item{standardized_deviation}{Standardized deviation of observed from expected}
+#'   \item{spatial_lag}{Spatially lagged standardized deviation}
+#'   \item{summary}{Summary statistics}
+#'   \item{simulation_results}{Matrix of simulation results (if requested)}
+#'
+#' @examples
+#' # Assuming you have observed counts, expected counts, and spatial weights
+#' result <- local_moran_constant_risk(
+#'   observed = vlbw$VLBW,
+#'   expected = vlbw$expected,
+#'   listw = q_listw,
+#'   nsim = 999
+#' )
+#'
+#' # Access results
+#' print(result$I_CR)
+#' print(result$pval_CR)
+#' print(sum(result$significant))  # Count of significant regions
+
+local_moran_constant_risk <- function(
+  observed,
+  expected,
+  listw,
+  nsim = 499,
+  seed = 123,
+  alpha = 0.05,
+  return_simulations = FALSE
+) {
+  # Input validation
+  if (length(observed) != length(expected)) {
+    stop("observed and expected vectors must have the same length")
+  }
+
+  if (any(expected <= 0)) {
+    stop("expected values must be positive")
+  }
+
+  if (any(observed < 0)) {
+    stop("observed values must be non-negative")
+  }
+
+  if (nsim <= 0 || !is.numeric(nsim)) {
+    stop("nsim must be a positive integer")
+  }
+
+  # Set seed for reproducibility
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
+
+  N <- length(observed)
+
+  # Step 1: Create standardized deviation of observed from expected
+  sd_CR <- (observed - expected) / sqrt(expected)
+
+  # Step 2: Create spatially lagged version of standardized deviation
+  wsd_CR <- spdep::lag.listw(listw, sd_CR)
+
+  # Step 3: Calculate local Moran's I under constant risk
+  I_CR <- sd_CR * wsd_CR
+
+  # Step 4: Setup simulation parameters
+  sims <- matrix(0, ncol = nsim, nrow = N)
+
+  # Step 5: Simulate null distribution
+  cat("Running", nsim, "simulations...\n")
+
+  for (i in 1:nsim) {
+    # Generate random Poisson counts given expected values
+    y_sim <- rpois(N, lambda = expected)
+
+    # Calculate standardized deviation for simulation
+    sd_CR_sim <- (y_sim - expected) / sqrt(expected)
+
+    # Calculate spatially lagged standardized deviation
+    wsd_CR_sim <- spdep::lag.listw(listw, sd_CR_sim)
+
+    # Calculate local Moran's I for this simulation
+    sims[, i] <- sd_CR_sim * wsd_CR_sim
+  }
+
+  # Step 6-8: Calculate p-values
+  # For each region, rank the observed value against simulated values
+  rank_results <- apply(cbind(I_CR, sims), 1, function(x) rank(x)[1])
+
+  # Calculate differences and p-values
+  diff <- pmax(0, nsim - rank_results)
+  pval_CR <- punif((diff + 1) / (nsim + 1))
+
+  # Determine significance
+  significant <- pval_CR < alpha
+
+  # Prepare results
+  results <- list(
+    I_CR = I_CR,
+    pval_CR = pval_CR,
+    significant = significant,
+    standardized_deviation = sd_CR,
+    spatial_lag = wsd_CR,
+    nsim = nsim,
+    alpha = alpha,
+    n_significant = sum(significant)
+  )
+
+  # Optionally include simulation results
+  if (return_simulations) {
+    results$simulation_results <- sims
+  }
+
+  # Add summary statistics
+  results$summary <- data.frame(
+    min_I = min(I_CR),
+    max_I = max(I_CR),
+    mean_I = mean(I_CR),
+    sd_I = sd(I_CR),
+    min_pval = min(pval_CR),
+    max_pval = max(pval_CR),
+    n_significant = sum(significant),
+    prop_significant = mean(significant)
+  )
+
+  cat("Simulation complete.\n")
+  cat("Number of significant regions:", sum(significant), "out of", N, "\n")
+  cat("Proportion significant:", round(mean(significant), 4), "\n")
+
+  class(results) <- "local_moran_cr"
+  return(results)
+}
+
+# 添加一个打印方法
+print.local_moran_cr <- function(x, ...) {
+  cat("Local Moran's I with Constant Risk Assumption\n")
+  cat("=============================================\n")
+  cat("Number of regions:", length(x$I_CR), "\n")
+  cat("Number of simulations:", x$nsim, "\n")
+  cat("Significance level:", x$alpha, "\n")
+  cat("Number of significant regions:", x$n_significant, "\n")
+  cat(
+    "Proportion significant:",
+    round(x$n_significant / length(x$I_CR), 4),
+    "\n\n"
+  )
+
+  cat("Summary Statistics:\n")
+  print(x$summary)
+}
+
+# 添加一个简单的汇总方法
+summary.local_moran_cr <- function(object, ...) {
+  cat("Local Moran's I with Constant Risk - Summary\n")
+  cat("===========================================\n")
+  cat("Regions analyzed:", length(object$I_CR), "\n")
+  cat("Simulations run:", object$nsim, "\n")
+  cat("Alpha level:", object$alpha, "\n\n")
+
+  cat("Local Moran's I Statistics:\n")
+  cat("Min:", round(min(object$I_CR), 4), "\n")
+  cat("1st Qu.:", round(quantile(object$I_CR, 0.25), 4), "\n")
+  cat("Median:", round(median(object$I_CR), 4), "\n")
+  cat("Mean:", round(mean(object$I_CR), 4), "\n")
+  cat("3rd Qu.:", round(quantile(object$I_CR, 0.75), 4), "\n")
+  cat("Max:", round(max(object$I_CR), 4), "\n\n")
+
+  cat("P-values:\n")
+  cat("Min:", round(min(object$pval_CR), 4), "\n")
+  cat("1st Qu.:", round(quantile(object$pval_CR, 0.25), 4), "\n")
+  cat("Median:", round(median(object$pval_CR), 4), "\n")
+  cat("Mean:", round(mean(object$pval_CR), 4), "\n")
+  cat("3rd Qu.:", round(quantile(object$pval_CR, 0.75), 4), "\n")
+  cat("Max:", round(max(object$pval_CR), 4), "\n\n")
+
+  cat("Significance:\n")
+  cat(
+    "Significant regions:",
+    object$n_significant,
+    "out of",
+    length(object$I_CR),
+    "\n"
+  )
+  cat(
+    "Proportion significant:",
+    round(object$n_significant / length(object$I_CR), 4),
+    "\n"
+  )
+
+  if (object$n_significant > 0) {
+    sig_indices <- which(object$significant)
+    cat(
+      "Significant region indices:",
+      paste(sig_indices, collapse = ", "),
+      "\n"
+    )
+  }
+}
+```
+
+
+```{r}
+# 使用
+result <- local_moran_constant_risk(
+  observed = vlbw$VLBW,
+  expected = vlbw$expected,
+  listw = q_listw,
+  nsim = 999,
+  seed = 123
+)
+
+# 查看结果
+print(result)
+
+# 详细汇总
+summary(result)
+
+# 将结果添加到数据框
+vlbw_lm$I_CR <- result$I_CR
+vlbw_lm$pval_CR <- result$pval_CR
+vlbw_lm$significant_CR <- result$significant
+
+# 获取显著区域的信息
+significant_regions <- which(result$significant)
+cat("Significant regions:", significant_regions, "\n")
+```
