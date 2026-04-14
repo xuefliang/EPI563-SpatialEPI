@@ -359,3 +359,62 @@ print(summary(atl))
 plot(atl, main = "Fulton-Dekalb Census Tracts")
 
 save.image("data/charpter7.RData")
+
+
+##########################################
+library(sf)
+library(tigris)
+library(dplyr)
+library(tidyr)
+options(tigris_use_cache = TRUE)
+
+# 1. 获取佐治亚州县级地图数据 (CRS: 4269)
+ga_counties <- counties(state = "GA", cb = TRUE) %>%
+  dplyr::select(GEOID, NAME) %>%
+  st_transform(4326)
+
+# 2. 模拟各县人口 (根据佐治亚州真实情况模拟，范围从 2000 到 100万)
+set.seed(123)
+county_pop <- data.frame(
+  GEOID = ga_counties$GEOID,
+  POP = round(exp(runif(159, log(2000), log(1000000))))
+)
+
+
+# 模拟 STI 患病率 (每千人 5 到 20 人不等)
+sti <- ga_counties %>%
+  left_join(county_pop, by = "GEOID") %>%
+  mutate(
+    STD = rpois(n(), lambda = (POP / 1000) * runif(n(), 5, 20)),
+    # 按照您提供的代码逻辑计算全局风险和期望值
+    rate_global = sum(STD) / sum(POP),
+    expected = rate_global * POP
+  )
+
+# 检查前几行
+print(head(sti))
+
+# 定义年份
+years <- 2010:2018
+
+sti_long <- ga_counties %>%
+  # 为每个县创建 9 年的重复行
+  slice(rep(1:n(), each = length(years))) %>%
+  mutate(year = rep(years, times = 159)) %>%
+  left_join(county_pop, by = "GEOID") %>%
+  mutate(
+    # 模拟人口随年份微小波动
+    POP = round(POP * (1 + (year - 2010) * 0.01)),
+    # 模拟 STI 计数：加入年份增长趋势
+    STD = rpois(
+      n(),
+      lambda = (POP / 1000) * (runif(n(), 5, 15) + (year - 2010) * 0.5)
+    )
+  )
+
+# 检查前几行
+print(head(sti_long))
+
+save.image("data/charpter9.RData")
+
+load("data/charpter9.RData")

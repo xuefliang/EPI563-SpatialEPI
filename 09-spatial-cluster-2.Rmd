@@ -95,11 +95,13 @@ Unfortunately the developer of this package moved onto other things and has not 
 :::
 
 ```{r message = F, warning = F}
-library(sf)        # manage sf class data 
-library(dplyr)     # facilitates data processing
-library(tmap)      # for thematic mapping
+library(sf) # manage sf class data
+library(dplyr) # facilitates data processing
+library(tmap) # for thematic mapping
 library(SpatialEpi) # Functions including the kulldorff()
-library(ggplot2)  # Create a ggplot visualization
+library(ggplot2) # Create a ggplot visualization
+# devtools::install_github("promerpr/scanstatistics")
+library(scanstatistics)
 ```
 
 
@@ -112,45 +114,31 @@ However, there is also a *spatio-temporal* dataset of STIs for each county for e
 
 ```{r include = FALSE}
 # cross-sectional STI data
-sti <- st_read('../SpatialEpi-2021/DATA/GA_STD/ga-std-2017-18.gpkg') 
 r <- sum(sti$STD) / sum(sti$POP)
-sti$expected <- r*sti$POP
+sti$expected <- r * sti$POP
 
 # longitudinal STI data
-sti_long <- st_read('../SpatialEpi-2021/DATA/GA_STD/ga-std-long.gpkg')
 ```
-
-
-```{r eval = FALSE}
-# cross-sectional STI data
-sti <- st_read('ga-std-2017-18.gpkg')
-
-# calculated overall global risk of STI
-r <- sum(sti$STD) / sum(sti$POP)
-
-# use the global risk and the population of each county to calculate local expected 
-sti$expected <- r*sti$POP
-
-# longitudinal STI data
-sti_long <- st_read('ga-std-long.gpkg')
-```
-
 
 Because these are new data, here is a simple map of the STI rate for the 2017-18 years pooled.
 
 ```{r}
 sti %>%
   mutate(rate = STD / POP * 1000) %>%
-  tm_shape() + 
-  tm_fill('rate',
-          style = 'quantile',
-          palette = 'YlGnBu',
-          title = 'STI per 1000') +
-  tm_layout(main.title = 'STI per capita, Georgia, 2018',
-            inner.margins = c(0.1, 0.02, 0.02, 0.08)) +
+  tm_shape() +
+  tm_fill(
+    'rate',
+    style = 'quantile',
+    palette = 'YlGnBu',
+    title = 'STI per 1000'
+  ) +
+  tm_layout(
+    main.title = 'STI per capita, Georgia, 2018',
+    inner.margins = c(0.1, 0.02, 0.02, 0.08)
+  ) +
   tm_credits('Source: GA-OASIS, https://oasis.state.ga.us/') +
   tm_borders()
-  
+
 ```
 
 
@@ -219,13 +207,15 @@ The precision (number of significant digits) of the resulting p-value is limited
 Finally, the specification of the `alpha.level` dictates which (if any) *secondary clusters* are retained. The most-likely cluster will be reported no matter the significance, but secondary clusters are only retained if they are smaller than the alpha threshold. For the purposes of exploration I set alpha to 0.2.
 
 ```{r}
-k1 <- kulldorff(sti_cent, 
-                cases = sti$STD,
-                population = sti$POP,
-                expected.cases = sti$expected,
-                pop.upper.bound = 0.5,
-                n.simulations = 499,
-                alpha.level = 0.2)
+k1 <- kulldorff(
+  sti_cent,
+  cases = sti$STD,
+  population = sti$POP,
+  expected.cases = sti$expected,
+  pop.upper.bound = 0.5,
+  n.simulations = 499,
+  alpha.level = 0.2
+)
 ```
 
 The plot produced by default (to suppress plot specify `plot = FALSE`), shows a histogram of the simulated null distribution for log-likelihood ratios of the contrast of rates *inside* versus *outside* assuming the constant risk hypothesis.  
@@ -238,7 +228,7 @@ Unfortunately, there is not a handy function for providing a pretty summary, but
 
 ```{r}
 # See the elements returned by function - explore them!
-names(k1) 
+names(k1)
 ```
 
 
@@ -271,7 +261,8 @@ The object `secondary.clusters` is a list, with each element of the list contain
 tibble(
   SMR = format(sapply(k1$secondary.clusters, '[[', 5), digits = 3), # this gets SMR's
   lik = format(sapply(k1$secondary.clusters, '[[', 6), digits = 2), # this gets log-likelihoods
-  pval = format(sapply(k1$secondary.clusters, '[[', 8), digits = 3)) %>%# this gets p.values
+  pval = format(sapply(k1$secondary.clusters, '[[', 8), digits = 3)
+) %>% # this gets p.values
   kableExtra::kable(align = 'c')
 ```
 
@@ -290,16 +281,21 @@ sti$k1_cluster <- NA
 2. Now fill in the value for this new variable according to whether each county is **in** a given cluster.  Recall that the row-numbers for the counties included in the *most-likely cluster* are contained as a vector in `k1$most.likely.cluster$location.IDs.included`.  Therefore, we can use those row indices to say which counties should be assigned to **cluster 1** (the most-likely cluster). 
 
 ``` {r}
-sti$k1_cluster[k1$most.likely.cluster$location.IDs.included] <- 'Most likely cluster'
+sti$k1_cluster[
+  k1$most.likely.cluster$location.IDs.included
+] <- 'Most likely cluster'
 ```
 
 
 3. The same approach can be used to extract the `location.IDs.included` for each of the secondary clusters. Here I simply loop (using `for(i in 1:length(x))`) across however many `secondary.clusters` there are and name them.
 
 ``` {r}
-for(i in 1:length(k1$secondary.clusters)){
-sti$k1_cluster[k1$secondary.clusters[[i]]$location.IDs.included] <- paste(
-  'Secondary cluster ', i, sep = '')
+for (i in 1:length(k1$secondary.clusters)) {
+  sti$k1_cluster[k1$secondary.clusters[[i]]$location.IDs.included] <- paste(
+    'Secondary cluster ',
+    i,
+    sep = ''
+  )
 }
 ```
 
@@ -308,12 +304,14 @@ The result is a mappable variable:
 
 ```{r}
 tm_shape(sti) +
-  tm_fill('k1_cluster',
-          style = 'cat',
-          textNA = 'Not in cluster',
-          palette = 'Set1',
-          title = '') + 
-  tm_borders() + 
+  tm_fill(
+    'k1_cluster',
+    style = 'cat',
+    textNA = 'Not in cluster',
+    palette = 'Set1',
+    title = ''
+  ) +
+  tm_borders() +
   tm_layout(legend.outside = T)
 ```
 
@@ -339,11 +337,13 @@ There are several ways to present data to the `scanstatistics` functions, but th
 
 ```{r}
 sti_scan2 <- sti_long %>%
-  mutate(count = STD,       # event variable must be labeled 'count'
-         location = GEOID, # region id must be labeled 'location'
-         population = POP, # denominator must be labeled 'population
-         time = as.integer(YEAR))%>%  # time-period must be labeled 'time'
-  dplyr::select(time, location, count, population) 
+  mutate(
+    count = STD, # event variable must be labeled 'count'
+    location = GEOID, # region id must be labeled 'location'
+    population = POP, # denominator must be labeled 'population
+    time = as.integer(year)
+  ) %>% # time-period must be labeled 'time'
+  dplyr::select(time, location, count, population)
 ```
 
 #### Prepare geographic window *zones*
@@ -357,7 +357,7 @@ Although the data are in the *long* format (e.g. multiple years for every geogra
 zones <- sti %>%
   st_centroid() %>% # convert polygons to centroid
   st_coordinates() %>% #converts sf object to matrix of x, y locations
-  spDists(x = ., y = ., longlat = FALSE) %>%
+  sp::spDists(x = ., y = ., longlat = FALSE) %>%
   dist_to_knn(k = 50) %>% # distance up to the 50 nearest neighbors
   knn_zones() # convert into zones needed for scanstatistics based on distances
 ```
@@ -387,10 +387,8 @@ There are several scan statistic options in this package including reliance on P
 ```{r eval = F}
 ## 2022 - This code outdated -- changes in progress ##
 
-#k2 <- scan_pb_poisson(sti_scan2, 
-#                      zones = zones,
-#                      n_mcsim = 499)
-#print(k2)
+k2 <- scan_pb_poisson(sti_scan2, zones = zones, n_mcsim = 499)
+print(k2)
 ```
 
 The basic summary information tells us the row-ID's for the most likely spatio-temporal cluster, and that of the 9 year period, the most-likely duration of this cluster is in fact 9-years (e.g. 2010-2018). In other words the cluster of STI's is quite persistent over time!
@@ -439,7 +437,7 @@ Now we can use this list of names to populate a new variable in our `sf` dataset
 ``` {r eval = F}
 ## 2022 - This code outdated -- changes in progress ##
 
-for(i in 1:length(top5_counties)){
+for (i in 1:length(top5_counties)) {
   cluster <- top5_counties[[i]]
   sti$cluster[sti$NAME %in% cluster] <- i
   sti$c_score[sti$NAME %in% cluster] <- top5$score[i]
@@ -452,10 +450,8 @@ for(i in 1:length(top5_counties)){
 ```{r eval = F}
 ## 2022 - This code outdated -- changes in progress ##
 
-tm_shape(sti) + 
-  tm_fill('cluster',
-          style = 'cat',
-          palette = 'Set1') +
+tm_shape(sti) +
+  tm_fill('cluster', style = 'cat', palette = 'Set1') +
   tm_borders()
 ```
 
@@ -476,12 +472,11 @@ top5$start <- 2018 - top5$duration
 
 # Create ggplot
 g <- ggplot(top5, aes(x = start, y = order, col = as.factor(order)))
-g + geom_segment(aes(yend = order), xend = 2019, size = 2) + 
-  geom_point(size = 3) + 
-  labs(x = 'Cluster timing',
-       y = 'Cluster number',
-       col = 'Cluster') 
-  
+g +
+  geom_segment(aes(yend = order), xend = 2019, size = 2) +
+  geom_point(size = 3) +
+  labs(x = 'Cluster timing', y = 'Cluster number', col = 'Cluster')
+
 ```
 
 
@@ -495,16 +490,16 @@ Each county has a varying probability of being *in* versus *out* of a cluster. T
 ## 2022 - This code outdated -- changes in progress ##
 
 # Note: This step takes awhile...about 4-5 minutes on my computer
-#county_scores <- score_locations(k2, zones)
+county_scores <- score_locations(k2, zones)
 ```
 
 ```{r eval = F}
 ## 2022 - This code outdated -- changes in progress ##
 
 # This part goes quicker - first just rename some stuff for merging
-sti_scan3 <- county_scores %>% 
+sti_scan3 <- county_scores %>%
   mutate(NAME = county) %>%
-  left_join(sti, by ='NAME') %>%
+  left_join(sti, by = 'NAME') %>%
   st_as_sf() # this just converts the new object back to 'sf'
 ```
 
@@ -514,7 +509,7 @@ Now you can map the *relative score*, interpreting it as the relative likelihood
 ## 2022 - This code outdated -- changes in progress ##
 
 tm_shape(sti_scan3) +
-  tm_fill('relative_score') + 
+  tm_fill('relative_score') +
   tm_borders()
 ```
 

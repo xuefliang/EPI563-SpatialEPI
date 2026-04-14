@@ -896,8 +896,6 @@ There is also evidence (especially in the exact and constant risk maps) of clust
 精确局部莫兰（localmoran.exact）：，解决每个县样本量小的问题，更稳
 固定风险 Poisson 局部莫兰（Constant Risk）： 最适合罕见病 + 小人口县，用期望数模拟，排除随机波动
 
-
-
 ```{r}
 #' Local Moran's I with Constant Risk Assumption
 #'
