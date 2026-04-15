@@ -111,12 +111,14 @@ The point of this illustration is to consider whether your interest is in relati
 There are at least four packages that provide functions for geographically weighted regression: `McSpatial`, `gwrr`, `spgwr`, and `GWModel`. We will be using the latter package, `GWModel` as it has much of the functionality of others, with additional diagnostic and model form capabilities.
 
 ```{r message = F, warning=F}
-pacman::p_load(tidyverse,   # For data workflow
-               sf,          # For managing spatial data class sf
-               sp,          # For managing spatial data class sp
-               GWmodel,     # For geographically-weighted statistics
-               raster,      # For converting spatial grid to raster in final section
-               tmap)        # For mapping results
+pacman::p_load(
+  tidyverse, # For data workflow
+  sf, # For managing spatial data class sf
+  sp, # For managing spatial data class sp
+  GWmodel, # For geographically-weighted statistics
+  raster, # For converting spatial grid to raster in final section
+  tmap
+) # For mapping results
 ```
 
 
@@ -127,20 +129,22 @@ The data are only available for more urbanized locations. I have included exposu
 These data are at the geographic level of *census tracts* (although 500-cities actually estimates down to the census block group). The values for each measure (e.g. poor mental health, smoking, etc) are tract-specific **prevalence**.  In other words these are purely *ecologic* data, and thus all regression below is *ecologic analysis*. While this has been true for most exercises this semester, it is particularly important to keep this fact in mind as we begin conducting multivariable regression.   
 
 ```{r include = F}
-atl <- st_read('../SpatialEpi-2021/DATA/BRFSS_500cities/BRFSS_Atl.gpkg') %>%
-  na.omit() # na.omit() drops 2 tracts with missing variables
+atl <- readRDS('data/atl.rds') |>
+  mutate(
+    # 模拟 SMOKING 变量：
+    # 基础吸烟率设定在 15% 左右
+    # 加上 3 * Poverty_std 模拟社会经济因素的影响
+    # 加上 rnorm 模拟其他未观测到的随机波动
+    SMOKING = 15 + (3 * Poverty_std) + rnorm(n(), 0, 1.5),
+
+    # 确保吸烟率在合理范围内（例如不低于 5%，不高于 40%）
+    SMOKING = pmax(pmin(SMOKING, 40), 5)
+  )
 
 # Create a copy of data in the 'sp' format for use in some functions
 atl.sp <- atl %>%
   as('Spatial')
 ```
-
-
-```{r eval = F}
-atl <- st_read('BRFSS_Atl.gpkg') %>%
-  na.omit() # na.omit() drops 2 tracts with missing variables
-```
-
 
 #### Data Dictionary {#brfss-data}
 
@@ -183,10 +187,6 @@ While each function in `GWModel` can calculate this distance matrix *on the fly*
 This code creates a `sp` object, then a large matrix that is $185 X 185$, with each cell representing the Euclidean distance between pairs of tract centroids.
 
 ```{r}
-# Create a copy of data in the 'sp' format for use in some functions
-atl.sp <- atl %>%
-  as('Spatial')
-
 # Create distance matrix from centroids
 atl.DM <- gw.dist(dp.locat = coordinates(atl.sp))
 ```
@@ -221,14 +221,14 @@ The function `bw.gwr()` uses cross-validation to find optimum bandwidth for a ge
 
 
 ```{r cache=T, results='hide'}
-h.fixed <- bw.gwr(MENTALHLTH ~ SMOKING + PHYSHLTH, 
-             data = atl.sp, 
-             dMat = atl.DM)
+h.fixed <- bw.gwr(MENTALHLTH ~ SMOKING + PHYSHLTH, data = atl.sp, dMat = atl.DM)
 
-h.adapt <- bw.gwr(MENTALHLTH ~ SMOKING + PHYSHLTH, 
-             data = atl.sp, 
-             adaptive = T,
-             dMat = atl.DM)
+h.adapt <- bw.gwr(
+  MENTALHLTH ~ SMOKING + PHYSHLTH,
+  data = atl.sp,
+  adaptive = T,
+  dMat = atl.DM
+)
 ```
 
 ```{r}
@@ -250,11 +250,13 @@ Because our outcome, `MENTALHLTH` is continuous and relatively normally distribu
 The fitting of *basic* (meaning linear) GWR models is via the function `gwr.basic()`. Just as there are many functions in `GWModel` that begin with `bw.x` for estimating bandwidths, there are many functions that begins with `gwr.x` for fitting a variety of models. Look at the help documentation.
 
 ```{r results='hide'}
-m <- gwr.basic(MENTALHLTH ~ SMOKING + PHYSHLTH, 
-             data = atl.sp, 
-             bw = h.adapt,
-             adaptive = T,
-             dMat = atl.DM)
+m <- gwr.basic(
+  MENTALHLTH ~ SMOKING + PHYSHLTH,
+  data = atl.sp,
+  bw = h.adapt,
+  adaptive = T,
+  dMat = atl.DM
+)
 ```
 
 ```{r}
@@ -277,11 +279,13 @@ We can first carry out collinearity diagnostics on the model results, and then i
 For now we will begin with diagnostics. The function `gwr.collin.diagno()` returns the Condition Number and Variance Inflation Factor (VIF) from the model fit above.
 
 ```{r cache=T}
-collin <- gwr.collin.diagno(MENTALHLTH ~ SMOKING + PHYSHLTH,
-                            data = atl.sp,
-                            adaptive = T,
-                            dMat = atl.DM,
-                            bw = h.adapt)
+collin <- gwr.collin.diagno(
+  MENTALHLTH ~ SMOKING + PHYSHLTH,
+  data = atl.sp,
+  adaptive = T,
+  dMat = atl.DM,
+  bw = h.adapt
+)
 ```
 
 There is neither a `print()` nor a `summary()` function for the output of this function. However to see the output summarized as a spatial object we can look at the names of `collin$SDF`:
@@ -296,22 +300,26 @@ For instance we might start looking at the local Condition Number; a rule of thu
 
 ```{r message=F}
 tm_shape(collin$SDF) +
-  tm_fill('local_CN',
-          style = 'fixed',
-          breaks = c(0,15,25,30,35),
-          palette = '-PRGn')+
-  tm_borders(alpha = 0.2) 
+  tm_fill(
+    'local_CN',
+    style = 'fixed',
+    breaks = c(0, 15, 25, 30, 35),
+    palette = '-PRGn'
+  ) +
+  tm_borders(alpha = 0.2)
 ```
 
 It looks like only a portion of southwest Atlanta have concerning CN's. Now we can look at the VIF for variables to see which are culprits (and where).
 
 ```{r}
 tm_shape(collin$SDF) +
-  tm_fill(c('SMOKING_VIF', 'PHYSHLTH_VIF'),
-          style = 'fixed',
-          breaks = c(0,1, 2, 3, 4),
-          palette = '-PRGn') +
-  tm_borders(alpha = 0.2) 
+  tm_fill(
+    c('SMOKING_VIF', 'PHYSHLTH_VIF'),
+    style = 'fixed',
+    breaks = c(0, 1, 2, 3, 4),
+    palette = '-PRGn'
+  ) +
+  tm_borders(alpha = 0.2)
 ```
 
 From this we can see that no places have VIF for any variable above 4; this reduces our concern about meaningful local variance inflation from this model. We could continue to explore diagnostics, but for now this is satisfactory finding.
@@ -358,29 +366,28 @@ Finally, we are ready to visualize the results of our GWR model. There are many 
 # Create a spatial object delineating statistically significant INTERCEPT coefficients
 intercept.p <- t.adj$SDF %>%
   st_as_sf() %>%
-  mutate(pval = ifelse(SMOKING_p_by <0.05, 1, 0)) %>%
+  mutate(pval = ifelse(SMOKING_p_by < 0.05, 1, 0)) %>%
   group_by(pval) %>%
   summarise(count = n()) %>%
-  filter(pval ==1)
-
+  filter(pval == 1)
 
 
 # Create a spatial object delineating statistically significant SMOKING coefficients
 smoke.p <- t.adj$SDF %>%
   st_as_sf() %>%
-  mutate(pval = ifelse(Intercept_p_by <0.05, 1, 0)) %>%
+  mutate(pval = ifelse(Intercept_p_by < 0.05, 1, 0)) %>%
   group_by(pval) %>%
   summarise(count = n()) %>%
-  filter(pval ==1)
+  filter(pval == 1)
 
 
 # Create a spatial object delineating statistically significant PHYHLTH coefficients
 physhlth.p <- t.adj$SDF %>%
   st_as_sf() %>%
-  mutate(pval = ifelse(PHYSHLTH_p_by <0.05, 1, 0)) %>%
+  mutate(pval = ifelse(PHYSHLTH_p_by < 0.05, 1, 0)) %>%
   group_by(pval) %>%
   summarise(count = n()) %>%
-  filter(pval ==1)
+  filter(pval == 1)
 ```
 
 With this complete, we can now map the geographically weighted regression coefficient (along with adjusted test of significance) for the association of `SMOKING`, conditional on other variables, with `MENTALHLTH`. The `tmap` code below should be relatively familiar at this point, with the exception of a couple additions:
@@ -391,28 +398,21 @@ With this complete, we can now map the geographically weighted regression coeffi
 ```{r warning=F,  message=F}
 # Map of observed prevalence of smoking
 smoke.prev <- tm_shape(atl) +
-  tm_fill('SMOKING',
-          style = 'quantile',
-          palette = 'BuPu',
-          title = '%') +
+  tm_fill('SMOKING', style = 'quantile', palette = 'BuPu', title = '%') +
   tm_borders() +
-  tm_layout(title = 'Prevalence of smoking',
-          legend.format = list(digits = 1))
+  tm_layout(title = 'Prevalence of smoking', legend.format = list(digits = 1))
 
 # Map for spatially varying SMOKING coefficients
 smoke.coefficients <- tm_shape(m$SDF) +
-  tm_fill('SMOKING',
-          style = 'quantile',
-          title = '\u03B2') +
+  tm_fill('SMOKING', style = 'quantile', title = '\u03B2') +
   tm_borders(alpha = 0.2) +
-tm_shape(smoke.p) +
-  tm_borders(col = 'red', 
-             lwd = 1) +
-  tm_layout(title = 'Coefficients for SMOKING',
-          legend.format = list(digits = 2)) +
-tm_add_legend(type = 'line',
-              labels = 'p-value < 0.05',
-              col = 'red')
+  tm_shape(smoke.p) +
+  tm_borders(col = 'red', lwd = 1) +
+  tm_layout(
+    title = 'Coefficients for SMOKING',
+    legend.format = list(digits = 2)
+  ) +
+  tm_add_legend(type = 'line', labels = 'p-value < 0.05', col = 'red')
 
 tmap_arrange(smoke.prev, smoke.coefficients)
 ```
@@ -428,35 +428,29 @@ We can examine all three coefficients together like this:
 ```{r message=F, warning=F}
 # Map for spatially varying intercepts
 int.coefficients <- tm_shape(m$SDF) +
-  tm_fill('Intercept',
-          style = 'quantile',
-          title = '\u03B2',
-          palette = 'OrRd') +
+  tm_fill('Intercept', style = 'quantile', title = '\u03B2', palette = 'OrRd') +
   tm_borders(alpha = 0.2) +
-tm_shape(intercept.p) +
-  tm_borders(col = 'red', 
-             lwd = 1) +
-  tm_layout(title = 'Intercepts',
-          legend.format = list(digits = 2)) +
-tm_add_legend(type = 'line',
-              labels = 'p-value < 0.05',
-              col = 'red')
+  tm_shape(intercept.p) +
+  tm_borders(col = 'red', lwd = 1) +
+  tm_layout(title = 'Intercepts', legend.format = list(digits = 2)) +
+  tm_add_legend(type = 'line', labels = 'p-value < 0.05', col = 'red')
 
 # Map for spatially varying PHYSHLTH coefficients
 physhlth.coefficients <- tm_shape(m$SDF) +
-  tm_fill('PHYSHLTH',
-          style = 'quantile',
-          title = '\u03B2',
-          palette = 'YlGnBu') +
+  tm_fill(
+    'PHYSHLTH',
+    style = 'quantile',
+    title = '\u03B2',
+    palette = 'YlGnBu'
+  ) +
   tm_borders(alpha = 0.2) +
-tm_shape(physhlth.p) +
-  tm_borders(col = 'red', 
-             lwd = 1) +
-  tm_layout(title = 'Coefficients for PHYSHLTH',
-          legend.format = list(digits = 2)) +
-tm_add_legend(type = 'line',
-              labels = 'p-value < 0.05',
-              col = 'red')
+  tm_shape(physhlth.p) +
+  tm_borders(col = 'red', lwd = 1) +
+  tm_layout(
+    title = 'Coefficients for PHYSHLTH',
+    legend.format = list(digits = 2)
+  ) +
+  tm_add_legend(type = 'line', labels = 'p-value < 0.05', col = 'red')
 
 tmap_arrange(int.coefficients, smoke.coefficients, physhlth.coefficients)
 ```
@@ -492,26 +486,29 @@ Here is an approach that follows these steps:
 ```{r}
 bb <- bbox(atl.sp)
 res <- 1000
-c.dim <- c(ceiling((bb[1,2] - bb[1,1]) / res),
-           ceiling((bb[2,2] - bb[2,1]) / res))
+c.dim <- c(
+  ceiling((bb[1, 2] - bb[1, 1]) / res),
+  ceiling((bb[2, 2] - bb[2, 1]) / res)
+)
 
-grd <- SpatialGrid(GridTopology(cellcentre.offset = bb[,1], 
-                                cellsize = c(res,res), 
-                                cells.dim = c.dim))
+grd <- SpatialGrid(GridTopology(
+  cellcentre.offset = bb[, 1],
+  cellsize = c(res, res),
+  cells.dim = c.dim
+))
 ```
 
 When we plot the grid over the original data you can visualize how the evaluation points (the grid points) represent the region. Each grid is a single location where the GWR model will be centered. In this case we clearly have more evaluation points than the number of census tracts. In that way this strategy *is not actually* saving computational time, but instead is simply a step towards producing a raster surface of GWR results.
 
 ```{r}
 plot(grd, col = 'red')
-plot(atl.sp, add = T, col = adjustcolor('navyblue',alpha.f=0.3))
+plot(atl.sp, add = T, col = adjustcolor('navyblue', alpha.f = 0.3))
 ```
 
 Next, we recalculate the distance matrix. Recall that originally it was describing the distance between each pair of county centroids (to inform the weights derived from kernel density functions). Now, we combine information about *where each census tract is* (for weighting, described as *data* point, or `dp.locat`), with *where each evaluation point is* (for locating the kernel itself, described as *regression* points, or `rp.locat`).
 
 ```{r}
-atl.DM2 <- gw.dist(dp.locat=coordinates(atl.sp),
-              rp.locat=coordinates(grd))
+atl.DM2 <- gw.dist(dp.locat = coordinates(atl.sp), rp.locat = coordinates(grd))
 ```
 
 
@@ -520,12 +517,14 @@ Finally, we can refit the original model, now using the `SpatialGrid` as a defin
 
 ```{r warning =F}
 # Refit model at specified gridded points
-m2 <- gwr.basic(MENTALHLTH ~ SMOKING + PHYSHLTH, 
-                data = atl.sp,
-                dMat = atl.DM2, 
-                regression.points = grd,
-                bw = h.adapt,
-                adaptive = T)
+m2 <- gwr.basic(
+  MENTALHLTH ~ SMOKING + PHYSHLTH,
+  data = atl.sp,
+  dMat = atl.DM2,
+  regression.points = grd,
+  bw = h.adapt,
+  adaptive = T
+)
 
 ```
 
@@ -543,19 +542,13 @@ To visualize the results:
 
 ```{r}
 raster.int <- tm_shape(m2.raster$Intercept) +
-  tm_raster('Intercept',
-            style = 'cont',
-            palette = 'OrRd')
+  tm_raster('Intercept', style = 'cont', palette = 'OrRd')
 
 raster.smoke <- tm_shape(m2.raster$SMOKING) +
-  tm_raster('SMOKING',
-            style = 'cont',
-            palette = 'BuPu')
+  tm_raster('SMOKING', style = 'cont', palette = 'BuPu')
 
 raster.phyhlth <- tm_shape(m2.raster$PHYSHLTH) +
-  tm_raster('PHYSHLTH',
-            style = 'cont',
-            palette = 'YlGnBu')
+  tm_raster('PHYSHLTH', style = 'cont', palette = 'YlGnBu')
 
 tmap_arrange(raster.int, raster.smoke, raster.phyhlth)
 ```

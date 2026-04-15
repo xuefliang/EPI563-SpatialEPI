@@ -475,3 +475,21 @@ print(atl)
 plot(atl["MENTALHLTH"], main = "Atlanta Simulated Mental Health Prevalence")
 
 saveRDS(atl, 'data/atl.rds')
+
+#################################
+library(GWmodel3)
+# 1. 投影转换 (建议使用投影坐标系，单位为米)
+atl_proj <- st_transform(atl, 32616)
+
+# 2. 拟合 GWR 模型
+gwr_mod <- gwr_basic(
+  formula = MENTALHLTH ~ SMOKING + PHYSHLTH,
+  data = atl_proj,
+  adaptive = TRUE,
+  kernel = "bisquare"
+)
+
+# 3. 查看结果总结
+print(gwr_mod)
+
+library(spgwr)
