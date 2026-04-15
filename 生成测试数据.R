@@ -418,3 +418,60 @@ print(head(sti_long))
 save.image("data/charpter9.RData")
 
 load("data/charpter9.RData")
+
+
+###########################################
+library(tigris)
+library(sf)
+library(dplyr)
+library(spdep)
+
+# 1. 获取富尔顿县 (Fulton County, GA) 的真实普查区边界
+# 这里包含了亚特兰大的核心区域
+options(tigris_use_cache = TRUE)
+Fulton_geoms <- tracts(state = "GA", county = "Fulton", cb = TRUE)
+DeKalb_geoms <- tracts(state = "GA", county = "DeKalb", cb = TRUE)
+
+# 2. 筛选并清洗数据
+
+atl <- Fulton_geoms |>
+  bind_rows(DeKalb_geoms) |>
+  st_transform(4326) # 统一使用 WGS84 坐标系
+
+# 3. 根据真实地理位置生成统计变量
+set.seed(42)
+n <- nrow(atl)
+
+# 为了让空间分析更有意义，我们模拟一些具有空间趋势的数据
+# 获取质心坐标用于生成空间梯度
+coords <- st_coordinates(st_centroid(atl))
+lon_scale <- as.numeric(scale(coords[, 1]))
+lat_scale <- as.numeric(scale(coords[, 2]))
+
+atl <- atl %>%
+  mutate(
+    PopulationCount = round(runif(n, 2500, 8000)),
+
+    # 模拟心理健康和物理健康：设定一个从西南到东北的健康梯度
+    # 并加入随机噪声，模拟真实调查中的波动
+    MENTALHLTH = 12 + 2 * lat_scale + 1.5 * lon_scale + rnorm(n, 0, 1),
+    PHYSHLTH = 10 + 2.5 * lat_scale + 1.2 * lon_scale + rnorm(n, 0, 1),
+
+    # 标准化指标 (Z-scores)
+    ParkProximity_std = as.numeric(scale(runif(n, 0, 100))),
+    Poverty_std = as.numeric(scale(rlnorm(n, meanlog = 2.5, sdlog = 0.5))),
+
+    # InstabilityStress: 模拟社会不稳定性压力
+    InstabilityStress = as.numeric(scale(rnorm(n))) +
+      as.numeric(scale(rnorm(n))),
+
+    # 确保列名与教材描述一致
+    geom = geometry
+  ) %>%
+  na.omit()
+
+# 4. 验证数据
+print(atl)
+plot(atl["MENTALHLTH"], main = "Atlanta Simulated Mental Health Prevalence")
+
+saveRDS(atl, 'data/atl.rds')
