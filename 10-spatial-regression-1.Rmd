@@ -88,26 +88,45 @@ This is the first of three weeks considering the application of *multivariable r
 
 
 ```{r message = F, warning=F}
-pacman::p_load(tidyverse, # General data processing
-               sf,        # Read/write sf data
-               spdep,     # Moran's I and spatial neighbors functions
-               tmap,      # Mapping
-               MASS)      # Statistical package including function for studentized residuals
+pacman::p_load(
+  tidyverse, # General data processing
+  sf, # Read/write sf data
+  spdep, # Moran's I and spatial neighbors functions
+  tmap, # Mapping
+  MASS
+) # Statistical package including function for studentized residuals
 ```
-
-
 
 
 ```{r include = F}
-vlbw <- st_read('../SpatialEpi-2021/DATA/VLBW-GA/ga-vlbw-covar.gpkg') %>%
-  mutate(rate = VLBW / TOT)
+load('data/vlbw.RData')
+vlbw <- vlbw %>%
+  mutate(
+    # MCD: 产科荒漠 (分类变量)
+    MCD = factor(sample(
+      c("Full Access", "Moderate Access", "Maternity Care Desert"),
+      size = n(),
+      replace = TRUE,
+      prob = c(0.5, 0.3, 0.2)
+    )),
+
+    # PctPov: 贫困率 (0-1)
+    PctPov = runif(n(), 0.05, 0.45),
+
+    # isolation: 黑白居住隔离指数 (0-1)
+    isolation = runif(n(), 0.1, 0.9),
+
+    # FI: 粮食不安全指数
+    FI = runif(n(), 0.08, 0.25),
+
+    # SocCap: 社会资本指数 (标准正态分布)
+    SocCap = rnorm(n(), mean = 0, sd = 1),
+
+    # pctNOIns_Fem: 女性无保险比例 (0-1)
+    pctNOIns_Fem = runif(n(), 0.02, 0.15)
+  )
 ```
 
-
-```{r eval = F}
-vlbw <- st_read('ga-vlbw-covar.gpkg')  %>%
-  mutate(rate = VLBW / TOT)
-```
 
 In this tutorial, we will once again use the `vlbw` dataset with *very low birthweight* prevalence in Georgia counties as an example. Although it has the identical outcome as that used in prior examples, this dataset also has several contextual variables as covariates. These contextual variables are selected as proxies of one hypothesized *data generating process*. Specifically, we now have the following variables measured for each county:
 
@@ -136,12 +155,11 @@ Fitting linear regression models in `R` is straightforward. For our purposes, we
 
 ```{r}
 # Create a vector of weights that reflect the relative population (births) size in each county
+# 反映每个县的人口（出生）规模相对大小
 wts <- vlbw$TOT / sum(vlbw$TOT) * 159
 
 # Fit a weighted linear regression model of the raw (observed) rates
-m0 <- lm(rate ~ 1, 
-         data = vlbw,
-         weights = wts)
+m0 <- lm(rate ~ 1, data = vlbw, weights = wts)
 
 summary(m0)
 ```
@@ -153,9 +171,11 @@ Look at the summary of this model. The results are sparse because we did not inc
 That previous model is not very interesting, so we might add some predictor variables. Here we consider two measures of social and material context that could influence women's health (poverty rate, `pctPOV` and residential racial segregation, `isolation`), as well as two indicators of health access including the prevalence of women in the county who are uninsured (`pctNOIns_Fem`) and whether each county is a designated Maternity Care Desert (`MCD`), meaning there is no access to OB/GYN or midwives, nor any hospitals with labor and delivery capacity.
 
 ```{r}
-m1 <- lm(rate ~ pctPOV + isolation + pctNOIns_Fem + MCD,
-         data = vlbw,
-         weights = wts)
+m1 <- lm(
+  rate ~ PctPov + isolation + pctNOIns_Fem + MCD,
+  data = vlbw,
+  weights = wts
+)
 summary(m1)
 ```
 
@@ -186,14 +206,18 @@ When we map values that have a central value (e.g. zero in this case or 1 in the
 
 ```{r message = F, warning=F}
 tm_shape(vlbw) +
-  tm_fill(c('m0_resids', 'm1_resids'),
-          style = 'quantile',
-          palette = 'RdYlGn',
-          midpoint = 0) +
-  tm_borders()  +
-  tm_layout(legend.position = c('RIGHT','top'),
-            inner.margins = c(0.02, 0.02, 0.02, 0.1),
-            legend.format = list(digits = 1))
+  tm_fill(
+    c('m0_resids', 'm1_resids'),
+    style = 'quantile',
+    palette = 'RdYlGn',
+    midpoint = 0
+  ) +
+  tm_borders() +
+  tm_layout(
+    legend.position = c('RIGHT', 'top'),
+    inner.margins = c(0.02, 0.02, 0.02, 0.1),
+    legend.format = list(digits = 1)
+  )
 
 ```
 
@@ -225,6 +249,8 @@ qnb_listw <- vlbw %>%
 
 
 #### `lm.morantest()` function
+
+moran.test() 默认输入的序列是相互独立的观测值。然而，回归残差 $\epsilon = Y - X\beta$ 并不是完全独立的。
 
 In the section on detecting general autocorrelation, we introduced several function for calculating the global Moran's I including `moran.test()` and `moranI.test()`. These were appropriate for evaluating an observed data series like the observed VLBW rate. In this instance, the residuals are *modeled* estimates and thus require a different approach. 
 
@@ -284,13 +310,12 @@ However, it is possible to examine *deviance residuals* from `glm` models, and a
 Note that we are no longer weighting for population (e.g. `TOT`), because that is incorporated directly into the Poisson model as an offset.
 
 ```{r}
-g0 <- glm(VLBW ~ 1 + offset(log(TOT)), 
-          data = vlbw,
-          family = poisson())
-g1 <- glm(VLBW ~ pctPOV + isolation + pctNOIns_Fem + MCD +
-            offset(log(TOT)), 
-          data = vlbw,
-          family = poisson())
+g0 <- glm(VLBW ~ 1 + offset(log(TOT)), data = vlbw, family = poisson())
+g1 <- glm(
+  VLBW ~ PctPov + isolation + pctNOIns_Fem + MCD + offset(log(TOT)),
+  data = vlbw,
+  family = poisson()
+)
 ```
 
 ```{r }
@@ -313,14 +338,18 @@ Then map them:
 
 ```{r}
 tm_shape(vlbw) +
-  tm_fill(c('g0_resids', 'g1_resids'),
-          style = 'quantile',
-          palette = 'RdYlGn',
-          midpoint = 0) +
-  tm_borders()  +
-  tm_layout(legend.position = c('RIGHT','top'),
-            inner.margins = c(0.02, 0.02, 0.02, 0.1),
-            legend.format = list(digits = 1))
+  tm_fill(
+    c('g0_resids', 'g1_resids'),
+    style = 'quantile',
+    palette = 'RdYlGn',
+    midpoint = 0
+  ) +
+  tm_borders() +
+  tm_layout(
+    legend.position = c('RIGHT', 'top'),
+    inner.margins = c(0.02, 0.02, 0.02, 0.1),
+    legend.format = list(digits = 1)
+  )
 ```
 
 
