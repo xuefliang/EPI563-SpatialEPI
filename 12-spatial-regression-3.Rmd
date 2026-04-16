@@ -299,27 +299,34 @@ You will see that there is an overall Condition Number (`local_CN`), as well as 
 For instance we might start looking at the local Condition Number; a rule of thumb suggests that a value over 30 is evidence of important multicollinearity.
 
 ```{r message=F}
-tm_shape(collin$SDF) +
-  tm_fill(
-    'local_CN',
-    style = 'fixed',
-    breaks = c(0, 15, 25, 30, 35),
-    palette = '-PRGn'
-  ) +
-  tm_borders(alpha = 0.2)
+collin_sf <- st_as_sf(collin$SDF)
+
+tm_shape(collin_sf) +
+  tm_polygons(
+    fill = "local_CN",
+    fill.scale = tm_scale_intervals(
+      values = "prgn", # v4 建议直接使用名称，反转颜色可用 midpoint 或手动传参
+      breaks = c(0, 15, 25, 30, 35, Inf) # 加上 Inf 解决“值高于最高间断点”的警告
+    ),
+    fill_alpha = 0.2, # 对应 v4 的新参数名
+    col = "black", # 边界颜色
+    col_alpha = 0.1 # 边界透明度
+  )
 ```
 
 It looks like only a portion of southwest Atlanta have concerning CN's. Now we can look at the VIF for variables to see which are culprits (and where).
 
 ```{r}
-tm_shape(collin$SDF) +
-  tm_fill(
-    c('SMOKING_VIF', 'PHYSHLTH_VIF'),
-    style = 'fixed',
-    breaks = c(0, 1, 2, 3, 4),
-    palette = '-PRGn'
+tm_shape(collin_sf) +
+  tm_polygons(
+    fill = c("SMOKING_VIF", "PHYSHLTH_VIF"), # 依然可以传向量，但控制逻辑变了
+    fill.scale = tm_scale_intervals(
+      values = "brewer.prgn", # 使用完整调色板名称
+      breaks = c(0, 1, 2, 3, 4, Inf) # 加上 Inf 防止超出范围报错
+    ),
+    fill_alpha = 0.2
   ) +
-  tm_borders(alpha = 0.2)
+  tm_facets(nrow = 1)
 ```
 
 From this we can see that no places have VIF for any variable above 4; this reduces our concern about meaningful local variance inflation from this model. We could continue to explore diagnostics, but for now this is satisfactory finding.
@@ -398,21 +405,43 @@ With this complete, we can now map the geographically weighted regression coeffi
 ```{r warning=F,  message=F}
 # Map of observed prevalence of smoking
 smoke.prev <- tm_shape(atl) +
-  tm_fill('SMOKING', style = 'quantile', palette = 'BuPu', title = '%') +
-  tm_borders() +
-  tm_layout(title = 'Prevalence of smoking', legend.format = list(digits = 1))
+  tm_polygons(
+    fill = "SMOKING",
+    fill.scale = tm_scale_intervals(
+      style = "quantile",
+      values = "brewer.bu_pu" # v4 推荐使用完整前缀避免歧义
+    ),
+    fill.legend = tm_legend(
+      title = "%"
+    )
+  ) +
+  tm_title("Prevalence of smoking") + # 标题从 tm_layout 移出
+  tm_layout(
+    legend.format = list(digits = 1)
+  )
 
 # Map for spatially varying SMOKING coefficients
-smoke.coefficients <- tm_shape(m$SDF) +
-  tm_fill('SMOKING', style = 'quantile', title = '\u03B2') +
-  tm_borders(alpha = 0.2) +
-  tm_shape(smoke.p) +
-  tm_borders(col = 'red', lwd = 1) +
+smoke.coefficients <- tm_shape(st_as_sf(m$SDF)) +
+  tm_polygons(
+    fill = "SMOKING",
+    fill.scale = tm_scale_intervals(
+      style = "quantile",
+      midpoint = NA # v4 默认会对正负值设置中心点，设为 NA 可使用连续分段
+    ),
+    fill.legend = tm_legend(title = "\u03B2"), # 标题移入 fill.legend
+    fill_alpha = 0.2
+  ) +
+  tm_shape(st_as_sf(smoke.p)) +
+  tm_borders(col = "red", lwd = 1) +
+  tm_title("Coefficients for SMOKING") + # 使用 tm_title 代替 tm_layout
   tm_layout(
-    title = 'Coefficients for SMOKING',
     legend.format = list(digits = 2)
   ) +
-  tm_add_legend(type = 'line', labels = 'p-value < 0.05', col = 'red')
+  tm_add_legend(
+    type = "lines", # 从 "line" 变为 "lines"
+    labels = "p-value < 0.05",
+    fill = "red" # 从 col 变为 fill
+  )
 
 tmap_arrange(smoke.prev, smoke.coefficients)
 ```
@@ -426,8 +455,9 @@ This map demonstrates several things about the relationship between local preval
 We can examine all three coefficients together like this:
 
 ```{r message=F, warning=F}
+m_sdf <- st_as_sf(m$SDF)
 # Map for spatially varying intercepts
-int.coefficients <- tm_shape(m$SDF) +
+int.coefficients <- tm_shape(m_sdf) +
   tm_fill('Intercept', style = 'quantile', title = '\u03B2', palette = 'OrRd') +
   tm_borders(alpha = 0.2) +
   tm_shape(intercept.p) +
@@ -436,7 +466,7 @@ int.coefficients <- tm_shape(m$SDF) +
   tm_add_legend(type = 'line', labels = 'p-value < 0.05', col = 'red')
 
 # Map for spatially varying PHYSHLTH coefficients
-physhlth.coefficients <- tm_shape(m$SDF) +
+physhlth.coefficients <- tm_shape(m_sdf) +
   tm_fill(
     'PHYSHLTH',
     style = 'quantile',
@@ -517,15 +547,33 @@ Finally, we can refit the original model, now using the `SpatialGrid` as a defin
 
 ```{r warning =F}
 # Refit model at specified gridded points
-m2 <- gwr.basic(
-  MENTALHLTH ~ SMOKING + PHYSHLTH,
-  data = atl.sp,
-  dMat = atl.DM2,
-  regression.points = grd,
-  bw = h.adapt,
-  adaptive = T
+atl_proj <- st_transform(atl, 26916) # 转换为米制单位
+
+# 2. 重新获取投影后的 Bbox 和网格
+bb <- st_bbox(atl_proj)
+res <- 1000 # 此时 1000 代表 1000米
+
+# 3. 创建网格（使用投影后的坐标）
+grid_sf <- st_make_grid(atl_proj, cellsize = c(res, res), what = "centers")
+grd_pixels <- as(as_Spatial(grid_sf), "SpatialPixels")
+
+# 4. 转换回 Spatial 用于 GWmodel
+atl_sp_proj <- as_Spatial(atl_proj)
+
+# 5. 重新计算距离和模型
+atl.DM2 <- gw.dist(
+  dp.locat = coordinates(atl_sp_proj),
+  rp.locat = coordinates(grd_pixels)
 )
 
+m2 <- gwr.basic(
+  MENTALHLTH ~ SMOKING + PHYSHLTH,
+  data = atl_sp_proj,
+  dMat = atl.DM2,
+  regression.points = grd_pixels,
+  bw = h.adapt,
+  adaptive = TRUE
+)
 ```
 
 To make visualizing easier we can convert the output of this model (which is a `SpatialPixelDataFrame`) to a raster object. Typically a `raster` object in `R` only has a single attribute (e.g. one statistic or variable with pixel values representing the local value of that statistic). 
